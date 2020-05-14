@@ -1,0 +1,10 @@
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Client.exe.config
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Client.exe
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Client.pdb
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.csprojAssemblyReference.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.exe
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.pdb
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.frmLogin.resources
