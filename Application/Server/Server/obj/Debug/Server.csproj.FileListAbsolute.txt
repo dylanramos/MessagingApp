@@ -1,0 +1,9 @@
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Server.exe.config
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Server.exe
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Server.pdb
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.csprojAssemblyReference.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.Properties.Resources.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.csproj.GenerateResource.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.exe
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.pdb
