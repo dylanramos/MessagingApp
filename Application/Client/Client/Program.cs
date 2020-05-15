@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Client
 {
     static class Program
     {
-        const int PORT_NO = 5000;
+        const int SERVER_PORT = 8000;
         const string SERVER_IP = "127.0.0.1";
 
         /// <summary>
@@ -19,25 +20,11 @@ namespace Client
         [STAThread]
         static void Main()
         {
-            /*
-            //---data to send to the server---
-            string textToSend = DateTime.Now.ToString();
+            IPEndPoint serverIpAddress = new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT);
+            Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            server.Connect(serverIpAddress);
 
-            //---create a TCPClient object at the IP and port no.---
-            TcpClient client = new TcpClient(SERVER_IP, PORT_NO);
-            NetworkStream nwStream = client.GetStream();
-            byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(textToSend);
-
-            //---send the text---
-            Console.WriteLine("Sending : " + textToSend);
-            nwStream.Write(bytesToSend, 0, bytesToSend.Length);
-
-            //---read back the text---
-            byte[] bytesToRead = new byte[client.ReceiveBufferSize];
-            int bytesRead = nwStream.Read(bytesToRead, 0, client.ReceiveBufferSize);
-            Console.WriteLine("Received : " + Encoding.ASCII.GetString(bytesToRead, 0, bytesRead));
-            Console.ReadLine();
-            client.Close();*/
+            server.Send()
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
