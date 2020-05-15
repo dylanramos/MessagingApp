@@ -8,3 +8,6 @@ C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\D
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.exe
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.pdb
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.frmLogin.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.frmAccountCreation.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.Forms.frmMain.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.Forms.frmChat.resources

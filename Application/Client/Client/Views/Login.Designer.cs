@@ -37,8 +37,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.ptbPassword = new System.Windows.Forms.PictureBox();
-            this.cmdLogin = new System.Windows.Forms.Button();
             this.lblAccountCreation = new System.Windows.Forms.Label();
+            this.lblTitle2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ptbTitle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbUserName)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbPassword)).BeginInit();
@@ -80,12 +80,16 @@
             // 
             this.txtUsername.BackColor = System.Drawing.Color.IndianRed;
             this.txtUsername.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtUsername.Location = new System.Drawing.Point(92, 237);
+            this.txtUsername.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtUsername.Location = new System.Drawing.Point(92, 242);
             this.txtUsername.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(278, 27);
-            this.txtUsername.TabIndex = 3;
+            this.txtUsername.Size = new System.Drawing.Size(278, 22);
+            this.txtUsername.TabIndex = 0;
+            this.txtUsername.TabStop = false;
             this.txtUsername.Text = "Nom d\'utilisateur";
+            this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
+            this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
             // panel1
             // 
@@ -109,13 +113,16 @@
             // 
             this.txtPassword.BackColor = System.Drawing.Color.IndianRed;
             this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtPassword.Location = new System.Drawing.Point(92, 319);
+            this.txtPassword.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPassword.Location = new System.Drawing.Point(92, 320);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(278, 27);
-            this.txtPassword.TabIndex = 6;
+            this.txtPassword.Size = new System.Drawing.Size(278, 22);
+            this.txtPassword.TabIndex = 1;
+            this.txtPassword.TabStop = false;
             this.txtPassword.Text = "Mot de passe";
-            this.txtPassword.UseSystemPasswordChar = true;
+            this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
+            this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
             // 
             // ptbPassword
             // 
@@ -127,21 +134,6 @@
             this.ptbPassword.TabIndex = 5;
             this.ptbPassword.TabStop = false;
             // 
-            // cmdLogin
-            // 
-            this.cmdLogin.BackColor = System.Drawing.Color.Tan;
-            this.cmdLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdLogin.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmdLogin.Location = new System.Drawing.Point(242, 453);
-            this.cmdLogin.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.cmdLogin.Name = "cmdLogin";
-            this.cmdLogin.Size = new System.Drawing.Size(128, 44);
-            this.cmdLogin.TabIndex = 8;
-            this.cmdLogin.Text = "Se connecter";
-            this.cmdLogin.UseVisualStyleBackColor = false;
-            this.cmdLogin.MouseLeave += new System.EventHandler(this.cmdLogin_MouseLeave);
-            this.cmdLogin.MouseHover += new System.EventHandler(this.button1_MouseHover);
-            // 
             // lblAccountCreation
             // 
             this.lblAccountCreation.AutoSize = true;
@@ -152,10 +144,24 @@
             this.lblAccountCreation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblAccountCreation.Name = "lblAccountCreation";
             this.lblAccountCreation.Size = new System.Drawing.Size(139, 21);
-            this.lblAccountCreation.TabIndex = 9;
+            this.lblAccountCreation.TabIndex = 0;
             this.lblAccountCreation.Text = "Créer un compte";
+            this.lblAccountCreation.Click += new System.EventHandler(this.lblAccountCreation_Click);
             this.lblAccountCreation.MouseLeave += new System.EventHandler(this.lblAccountCreation_MouseLeave);
             this.lblAccountCreation.MouseHover += new System.EventHandler(this.lblAccountCreation_MouseHover);
+            // 
+            // lblTitle2
+            // 
+            this.lblTitle2.AutoSize = true;
+            this.lblTitle2.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle2.ForeColor = System.Drawing.Color.Tan;
+            this.lblTitle2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblTitle2.Location = new System.Drawing.Point(46, 187);
+            this.lblTitle2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitle2.Name = "lblTitle2";
+            this.lblTitle2.Size = new System.Drawing.Size(177, 22);
+            this.lblTitle2.TabIndex = 8;
+            this.lblTitle2.Text = "Conexion au compte";
             // 
             // frmLogin
             // 
@@ -163,8 +169,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(420, 540);
+            this.Controls.Add(this.lblTitle2);
             this.Controls.Add(this.lblAccountCreation);
-            this.Controls.Add(this.cmdLogin);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.panel1);
@@ -197,8 +203,8 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.PictureBox ptbPassword;
-        private System.Windows.Forms.Button cmdLogin;
         private System.Windows.Forms.Label lblAccountCreation;
+        private System.Windows.Forms.Label lblTitle2;
     }
 }
 
