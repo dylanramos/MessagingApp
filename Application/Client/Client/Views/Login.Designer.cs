@@ -39,6 +39,8 @@
             this.ptbPassword = new System.Windows.Forms.PictureBox();
             this.lblAccountCreation = new System.Windows.Forms.Label();
             this.lblTitle2 = new System.Windows.Forms.Label();
+            this.lblUsername = new System.Windows.Forms.Label();
+            this.lblPassword = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ptbTitle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbUserName)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbPassword)).BeginInit();
@@ -87,7 +89,6 @@
             this.txtUsername.Size = new System.Drawing.Size(278, 22);
             this.txtUsername.TabIndex = 0;
             this.txtUsername.TabStop = false;
-            this.txtUsername.Text = "Nom d\'utilisateur";
             this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
             this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
@@ -120,7 +121,7 @@
             this.txtPassword.Size = new System.Drawing.Size(278, 22);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.TabStop = false;
-            this.txtPassword.Text = "Mot de passe";
+            this.txtPassword.UseSystemPasswordChar = true;
             this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
             this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
             // 
@@ -163,12 +164,36 @@
             this.lblTitle2.TabIndex = 8;
             this.lblTitle2.Text = "Conexion au compte";
             // 
+            // lblUsername
+            // 
+            this.lblUsername.AutoSize = true;
+            this.lblUsername.Enabled = false;
+            this.lblUsername.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUsername.Location = new System.Drawing.Point(93, 242);
+            this.lblUsername.Name = "lblUsername";
+            this.lblUsername.Size = new System.Drawing.Size(142, 21);
+            this.lblUsername.TabIndex = 9;
+            this.lblUsername.Text = "Nom d\'utilisateur";
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.AutoSize = true;
+            this.lblPassword.Enabled = false;
+            this.lblPassword.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPassword.Location = new System.Drawing.Point(93, 320);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(113, 21);
+            this.lblPassword.TabIndex = 11;
+            this.lblPassword.Text = "Mot de passe";
+            // 
             // frmLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 27F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(420, 540);
+            this.Controls.Add(this.lblPassword);
+            this.Controls.Add(this.lblUsername);
             this.Controls.Add(this.lblTitle2);
             this.Controls.Add(this.lblAccountCreation);
             this.Controls.Add(this.panel2);
@@ -205,6 +230,8 @@
         private System.Windows.Forms.PictureBox ptbPassword;
         private System.Windows.Forms.Label lblAccountCreation;
         private System.Windows.Forms.Label lblTitle2;
+        private System.Windows.Forms.Label lblUsername;
+        private System.Windows.Forms.Label lblPassword;
     }
 }
 

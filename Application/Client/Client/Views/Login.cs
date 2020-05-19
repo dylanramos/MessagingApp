@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,6 +16,10 @@ namespace Client
 {
     public partial class frmLogin : Form
     {
+        const int SERVER_PORT = 3333;
+
+        private Socket _clientSocket;
+
         public frmLogin()
         {
             InitializeComponent();
@@ -40,33 +46,28 @@ namespace Client
 
         private void txtUsername_Enter(object sender, EventArgs e)
         {
-            if (txtUsername.Text == "Nom d'utilisateur")
-                txtUsername.Text = "";
+            lblUsername.Text = "";
         }
 
         private void txtUsername_Leave(object sender, EventArgs e)
         {
-            if (txtUsername.Text == "")
-                txtUsername.Text = "Nom d'utilisateur";
+            if(String.IsNullOrEmpty(txtUsername.Text))
+            {
+                lblUsername.Text = "Nom d'utilisateur";
+            }   
         }
 
         private void txtPassword_Enter(object sender, EventArgs e)
         {
-            if (txtPassword.Text == "Mot de passe")
-            {
-                txtPassword.Text = "";
-            }
-
-            txtPassword.UseSystemPasswordChar = true;
+            lblPassword.Text = "";
         }
 
         private void txtPassword_Leave(object sender, EventArgs e)
         {
-            if (txtPassword.Text == "")
+            if(String.IsNullOrEmpty(txtPassword.Text))
             {
-                txtPassword.UseSystemPasswordChar = false;
-                txtPassword.Text = "Mot de passe";
-            }
+                lblPassword.Text = "Mot de passe";
+            }    
         }
 
         private void lblAccountCreation_Click(object sender, EventArgs e)
@@ -78,10 +79,47 @@ namespace Client
 
         private void LoginButtonClicked(object sender, EventArgs e)
         {
-            this.Close();
+            if(!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
+            {
+                try
+                {
+                    _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _clientSocket.BeginConnect(new IPEndPoint(IPAddress.Loopback, SERVER_PORT), new AsyncCallback(ConnectCallback), null);
 
-            frmChat chat = new frmChat();
-            chat.Show();
+                    byte[] buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text);
+                    _clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+
+                    this.Close();
+
+                    frmChat chat = new frmChat();
+                    chat.Show();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            } 
+            else
+            {
+                MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }  
+        }
+
+        private void ConnectCallback(IAsyncResult asyncResult)
+        {
+            try
+            {
+                _clientSocket.EndConnect(asyncResult);
+            }
+            catch(Exception exception)
+            {
+                MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SendCallback(IAsyncResult asyncResult)
+        {
+            _clientSocket.EndSend(asyncResult);
         }
     }
 }
