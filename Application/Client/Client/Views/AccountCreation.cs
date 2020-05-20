@@ -6,6 +6,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,6 +17,12 @@ namespace Client
 {
     public partial class frmAccountCreation : Form
     {
+        const int SERVER_PORT = 3333;
+        const string SERVER_IP = "127.0.0.1";
+
+        private Socket _clientSocket;
+        byte[] _buffer;
+
         public frmAccountCreation()
         {
             InitializeComponent();
@@ -35,51 +44,40 @@ namespace Client
 
         private void txtUsername_Enter(object sender, EventArgs e)
         {
-            if (txtUsername.Text == "Nom d'utilisateur")
-                txtUsername.Text = "";
+            lblUsername.Text = "";
         }
 
         private void txtUsername_Leave(object sender, EventArgs e)
         {
-            if (txtUsername.Text == "")
-                txtUsername.Text = "Nom d'utilisateur";
+            if (String.IsNullOrEmpty(txtUsername.Text))
+            {
+                lblUsername.Text = "Nom d'utilisateur";
+            }
         }
 
         private void txtPassword_Enter(object sender, EventArgs e)
         {
-            if (txtPassword.Text == "Mot de passe")
-            {
-                txtPassword.Text = "";
-            }
-
-            txtPassword.UseSystemPasswordChar = true;
+            lblPassword.Text = "";
         }
 
         private void txtPassword_Leave(object sender, EventArgs e)
         {
-            if (txtPassword.Text == "")
+            if (String.IsNullOrEmpty(txtPassword.Text))
             {
-                txtPassword.UseSystemPasswordChar = false;
-                txtPassword.Text = "Mot de passe";
+                lblPassword.Text = "Mot de passe";
             }
         }
 
         private void txtPasswordVerification_Enter(object sender, EventArgs e)
         {
-            if (txtPasswordVerification.Text == "Vérification du mot de passe")
-            {
-                txtPasswordVerification.Text = "";
-            }
-
-            txtPasswordVerification.UseSystemPasswordChar = true;
+            lblPasswordVerification.Text = "";
         }
 
         private void txtPasswordVerification_Leave(object sender, EventArgs e)
         {
-            if (txtPasswordVerification.Text == "")
+            if (String.IsNullOrEmpty(txtPasswordVerification.Text))
             {
-                txtPasswordVerification.UseSystemPasswordChar = false;
-                txtPasswordVerification.Text = "Vérification du mot de passe";
+                lblPasswordVerification.Text = "Mot de passe";
             }
         }
 
@@ -93,10 +91,96 @@ namespace Client
 
         private void CreateButtonClicked(object sender, EventArgs e)
         {
-            this.Close();
+            if (!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text) && !String.IsNullOrEmpty(txtPasswordVerification.Text))
+            {
+                if (txtPassword.Text == txtPasswordVerification.Text)
+                {
+                    byte[] salt;
+                    new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+                    var pbkdf2 = new Rfc2898DeriveBytes(txtPassword.Text, salt, 1000); // Shuffles the password with the salt
 
-            frmChat chat = new frmChat();
-            chat.Show();
+                    byte[] hash = pbkdf2.GetBytes(20);
+                    byte[] hashBytes = new byte[36];
+
+                    Array.Copy(salt, 0, hashBytes, 0, 16);
+                    Array.Copy(hash, 0, hashBytes, 16, 20);
+
+                    string savedPasswordHash = Convert.ToBase64String(hashBytes);
+
+                    try
+                    {
+                        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        socket.Connect(SERVER_IP, SERVER_PORT);
+                        socket.Close();
+                        socket.Dispose();
+                        /*
+                        _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        _clientSocket.BeginConnect(new IPEndPoint(IPAddress.Loopback, SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+
+                        // Begin sending the data to the remote server
+                        _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + savedPasswordHash + ";");
+                        _clientSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+
+                        // Begin receiving the data from the remote server.
+                        _buffer = new byte[_clientSocket.ReceiveBufferSize];
+                        _clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);*/
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Les mots de passe doivent être identiques.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ConnectCallback(IAsyncResult asyncResult)
+        {
+            try
+            {
+                _clientSocket.EndConnect(asyncResult);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SendCallback(IAsyncResult asyncResult)
+        {
+            _clientSocket.EndSend(asyncResult);
+        }
+
+        private void ReceiveCallback(IAsyncResult asyncResult)
+        {
+            _clientSocket.EndReceive(asyncResult);
+
+            string data = Encoding.ASCII.GetString(_buffer);
+
+            switch (data)
+            {
+                case "OK":
+
+                    MessageBox.Show("Le compte a bien été créé.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    this.Close();
+
+                    frmLogin frmLogin = new frmLogin();
+                    frmLogin.Show();
+                    break;
+
+                case "NOK":
+
+                    MessageBox.Show("Ce nom d'utilisateur existe déjà.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+            }
         }
     }
 }

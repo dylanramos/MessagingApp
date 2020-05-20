@@ -32,13 +32,16 @@
             this.cmdStop = new System.Windows.Forms.Button();
             this.lstlogs = new System.Windows.Forms.ListBox();
             this.cmdClose = new System.Windows.Forms.Button();
+            this.lsvClients = new System.Windows.Forms.ListView();
+            this.IpAddressColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IdColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // cmdStart
             // 
             this.cmdStart.BackColor = System.Drawing.Color.Olive;
             this.cmdStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdStart.Location = new System.Drawing.Point(476, 457);
+            this.cmdStart.Location = new System.Drawing.Point(476, 568);
             this.cmdStart.Name = "cmdStart";
             this.cmdStart.Size = new System.Drawing.Size(182, 41);
             this.cmdStart.TabIndex = 0;
@@ -50,7 +53,7 @@
             // 
             this.cmdStop.BackColor = System.Drawing.Color.Firebrick;
             this.cmdStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdStop.Location = new System.Drawing.Point(288, 457);
+            this.cmdStop.Location = new System.Drawing.Point(288, 568);
             this.cmdStop.Name = "cmdStop";
             this.cmdStop.Size = new System.Drawing.Size(182, 41);
             this.cmdStop.TabIndex = 1;
@@ -61,9 +64,9 @@
             // 
             this.lstlogs.FormattingEnabled = true;
             this.lstlogs.ItemHeight = 21;
-            this.lstlogs.Location = new System.Drawing.Point(12, 54);
+            this.lstlogs.Location = new System.Drawing.Point(12, 292);
             this.lstlogs.Name = "lstlogs";
-            this.lstlogs.Size = new System.Drawing.Size(646, 382);
+            this.lstlogs.Size = new System.Drawing.Size(646, 235);
             this.lstlogs.TabIndex = 2;
             // 
             // cmdClose
@@ -71,19 +74,44 @@
             this.cmdClose.BackColor = System.Drawing.Color.Firebrick;
             this.cmdClose.FlatAppearance.BorderSize = 0;
             this.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdClose.Location = new System.Drawing.Point(636, 0);
+            this.cmdClose.Location = new System.Drawing.Point(660, 0);
             this.cmdClose.Name = "cmdClose";
             this.cmdClose.Size = new System.Drawing.Size(36, 32);
             this.cmdClose.TabIndex = 3;
             this.cmdClose.Text = "X";
             this.cmdClose.UseVisualStyleBackColor = false;
+            this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
+            // 
+            // lsvClients
+            // 
+            this.lsvClients.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.IpAddressColumn,
+            this.IdColumn});
+            this.lsvClients.HideSelection = false;
+            this.lsvClients.Location = new System.Drawing.Point(12, 38);
+            this.lsvClients.Name = "lsvClients";
+            this.lsvClients.Size = new System.Drawing.Size(646, 232);
+            this.lsvClients.TabIndex = 4;
+            this.lsvClients.UseCompatibleStateImageBehavior = false;
+            this.lsvClients.View = System.Windows.Forms.View.Details;
+            // 
+            // IpAddressColumn
+            // 
+            this.IpAddressColumn.Text = "Adresse IP";
+            this.IpAddressColumn.Width = 120;
+            // 
+            // IdColumn
+            // 
+            this.IdColumn.Text = "ID du client";
+            this.IdColumn.Width = 120;
             // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
-            this.ClientSize = new System.Drawing.Size(672, 510);
+            this.ClientSize = new System.Drawing.Size(696, 621);
+            this.Controls.Add(this.lsvClients);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lstlogs);
             this.Controls.Add(this.cmdStop);
@@ -103,6 +131,9 @@
         private System.Windows.Forms.Button cmdStop;
         private System.Windows.Forms.ListBox lstlogs;
         private System.Windows.Forms.Button cmdClose;
+        private System.Windows.Forms.ListView lsvClients;
+        private System.Windows.Forms.ColumnHeader IpAddressColumn;
+        private System.Windows.Forms.ColumnHeader IdColumn;
     }
 }
 

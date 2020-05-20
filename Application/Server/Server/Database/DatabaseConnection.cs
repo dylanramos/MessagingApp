@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.IO;
+using Server.Classes;
 
 namespace Server.Database
 {
@@ -51,16 +52,18 @@ namespace Server.Database
             command = new SQLiteCommand(dbConnection);
 
             command.CommandText = "CREATE TABLE Users (" +
-                "UserId INT PRIMARY KEY AUTOINCREMENT, " +
+                "UserId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "UserName VARCHAR(45), " +
-                "UserPassword VARCHAR(45));";
+                "UserPassword VARCHAR(50));";
 
             command.CommandText += "CREATE TABLE Messages (" +
-                "MessageId INT PRIMARY KEY AUTOINCREMENT, " +
+                "MessageId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "MessageText TEXT(250), " +
                 "ReceiverUserId INT, " +
                 "UserId INT," +
                 "CONSTRAINT FK_UserId FOREIGN KEY(UserId) REFERENCES Users(UserId));";
+
+            command.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -74,9 +77,30 @@ namespace Server.Database
             return command.ExecuteReader();
         }
 
-        private void CreateAccount()
+        /// <summary>
+        /// Creates a new user in the database
+        /// </summary>
+        /// <param name="user"></param>
+        public void CreateAccount(User user)
         {
+            ExecuteQuery("INSERT INTO Users(UserName, UserPassword) VALUES('" + user.Username + "', '" + user.Password + "')");
+        }
 
+        public bool CheckUserExists(User user)
+        {
+            bool exists = false;
+
+            reader = ExecuteQuery("SELECT UserName AS username FROM Users WHERE UserName = '" + user.Username + "'");
+
+            while (reader.Read())
+            {
+                if(reader["username"].ToString() != "")
+                {
+                    exists = true;
+                }
+            }
+
+            return exists;
         }
     }
 }

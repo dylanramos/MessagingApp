@@ -9,7 +9,6 @@ C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\D
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.pdb
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\EntityFramework.dll
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\EntityFramework.SqlServer.dll
-C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\SQLitePCLRaw.core.dll
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\System.Buffers.dll
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\System.Data.SQLite.dll
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\System.Data.SQLite.EF6.dll

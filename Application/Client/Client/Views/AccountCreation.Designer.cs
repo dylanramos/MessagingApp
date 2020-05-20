@@ -48,6 +48,9 @@
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.lblTitle2 = new System.Windows.Forms.Label();
+            this.lblUsername = new System.Windows.Forms.Label();
+            this.lblPassword = new System.Windows.Forms.Label();
+            this.lblPasswordVerification = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ptbTitle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbUserName)).BeginInit();
             this.panel2.SuspendLayout();
@@ -101,7 +104,6 @@
             this.txtUsername.Size = new System.Drawing.Size(278, 22);
             this.txtUsername.TabIndex = 0;
             this.txtUsername.TabStop = false;
-            this.txtUsername.Text = "Nom d\'utilisateur";
             this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
             this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
@@ -212,7 +214,7 @@
             this.txtPassword.Size = new System.Drawing.Size(278, 22);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.TabStop = false;
-            this.txtPassword.Text = "Mot de passe";
+            this.txtPassword.UseSystemPasswordChar = true;
             this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
             this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
             // 
@@ -237,7 +239,7 @@
             this.txtPasswordVerification.Size = new System.Drawing.Size(278, 22);
             this.txtPasswordVerification.TabIndex = 9;
             this.txtPasswordVerification.TabStop = false;
-            this.txtPasswordVerification.Text = "Vérification du mot de passe";
+            this.txtPasswordVerification.UseSystemPasswordChar = true;
             this.txtPasswordVerification.Enter += new System.EventHandler(this.txtPasswordVerification_Enter);
             this.txtPasswordVerification.Leave += new System.EventHandler(this.txtPasswordVerification_Leave);
             // 
@@ -273,12 +275,48 @@
             this.lblTitle2.TabIndex = 9;
             this.lblTitle2.Text = "Création d\'un compte";
             // 
+            // lblUsername
+            // 
+            this.lblUsername.AutoSize = true;
+            this.lblUsername.Enabled = false;
+            this.lblUsername.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUsername.Location = new System.Drawing.Point(88, 242);
+            this.lblUsername.Name = "lblUsername";
+            this.lblUsername.Size = new System.Drawing.Size(142, 21);
+            this.lblUsername.TabIndex = 12;
+            this.lblUsername.Text = "Nom d\'utilisateur";
+            // 
+            // lblPassword
+            // 
+            this.lblPassword.AutoSize = true;
+            this.lblPassword.Enabled = false;
+            this.lblPassword.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPassword.Location = new System.Drawing.Point(88, 334);
+            this.lblPassword.Name = "lblPassword";
+            this.lblPassword.Size = new System.Drawing.Size(113, 21);
+            this.lblPassword.TabIndex = 13;
+            this.lblPassword.Text = "Mot de passe";
+            // 
+            // lblPasswordVerification
+            // 
+            this.lblPasswordVerification.AutoSize = true;
+            this.lblPasswordVerification.Enabled = false;
+            this.lblPasswordVerification.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPasswordVerification.Location = new System.Drawing.Point(88, 394);
+            this.lblPasswordVerification.Name = "lblPasswordVerification";
+            this.lblPasswordVerification.Size = new System.Drawing.Size(229, 21);
+            this.lblPasswordVerification.TabIndex = 14;
+            this.lblPasswordVerification.Text = "Vérification du mot de passe";
+            // 
             // frmAccountCreation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 27F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(420, 579);
+            this.Controls.Add(this.lblPasswordVerification);
+            this.Controls.Add(this.lblPassword);
+            this.Controls.Add(this.lblUsername);
             this.Controls.Add(this.lblTitle2);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.pictureBox3);
@@ -333,6 +371,9 @@
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label lblTitle2;
+        private System.Windows.Forms.Label lblUsername;
+        private System.Windows.Forms.Label lblPassword;
+        private System.Windows.Forms.Label lblPasswordVerification;
     }
 }
 
