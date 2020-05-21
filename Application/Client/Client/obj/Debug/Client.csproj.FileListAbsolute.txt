@@ -11,3 +11,8 @@ C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\D
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.frmAccountCreation.resources
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.Forms.frmMain.resources
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.Forms.frmChat.resources
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Microsoft.AspNetCore.Cryptography.Internal.xml
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\bin\Debug\Microsoft.AspNetCore.Cryptography.KeyDerivation.xml
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Client\Client\obj\Debug\Client.csproj.CopyComplete

@@ -17,10 +17,10 @@ namespace Client
 {
     public partial class frmAccountCreation : Form
     {
-        const int SERVER_PORT = 3333;
         const string SERVER_IP = "127.0.0.1";
+        const int SERVER_PORT = 3333;       
 
-        private Socket _clientSocket;
+        private Socket _serverSocket;
         byte[] _buffer;
 
         public frmAccountCreation()
@@ -95,35 +95,10 @@ namespace Client
             {
                 if (txtPassword.Text == txtPasswordVerification.Text)
                 {
-                    byte[] salt;
-                    new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-                    var pbkdf2 = new Rfc2898DeriveBytes(txtPassword.Text, salt, 1000); // Shuffles the password with the salt
-
-                    byte[] hash = pbkdf2.GetBytes(20);
-                    byte[] hashBytes = new byte[36];
-
-                    Array.Copy(salt, 0, hashBytes, 0, 16);
-                    Array.Copy(hash, 0, hashBytes, 16, 20);
-
-                    string savedPasswordHash = Convert.ToBase64String(hashBytes);
-
                     try
                     {
-                        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        socket.Connect(SERVER_IP, SERVER_PORT);
-                        socket.Close();
-                        socket.Dispose();
-                        /*
-                        _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        _clientSocket.BeginConnect(new IPEndPoint(IPAddress.Loopback, SERVER_PORT), new AsyncCallback(ConnectCallback), null);
-
-                        // Begin sending the data to the remote server
-                        _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + savedPasswordHash + ";");
-                        _clientSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
-
-                        // Begin receiving the data from the remote server.
-                        _buffer = new byte[_clientSocket.ReceiveBufferSize];
-                        _clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);*/
+                        _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        _serverSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null); 
                     }
                     catch (Exception exception)
                     {
@@ -145,7 +120,12 @@ namespace Client
         {
             try
             {
-                _clientSocket.EndConnect(asyncResult);
+                _serverSocket.EndConnect(asyncResult);
+
+                // Begin sending the data to the remote server
+                _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+
+                _serverSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
             }
             catch (Exception exception)
             {
@@ -155,32 +135,39 @@ namespace Client
 
         private void SendCallback(IAsyncResult asyncResult)
         {
-            _clientSocket.EndSend(asyncResult);
-        }
+            _serverSocket.EndSend(asyncResult);
 
-        private void ReceiveCallback(IAsyncResult asyncResult)
-        {
-            _clientSocket.EndReceive(asyncResult);
+            byte[] buffer = new byte[_serverSocket.ReceiveBufferSize];
+            _serverSocket.Receive(buffer);
 
-            string data = Encoding.ASCII.GetString(_buffer);
+            string data = Encoding.ASCII.GetString(buffer);
+            string[] words = data.Split(';');
+            string request = words[0];
 
-            switch (data)
+            switch (request)
             {
-                case "OK":
+                case "AccountCreationOk":
 
                     MessageBox.Show("Le compte a bien été créé.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    this.Close();
+                    Invoke((MethodInvoker)delegate
+                    {
+                        this.Close();
+                        frmLogin frmLogin = new frmLogin();
+                        frmLogin.Show();
+                    });
 
-                    frmLogin frmLogin = new frmLogin();
-                    frmLogin.Show();
                     break;
 
-                case "NOK":
+                case "AccountCreationNok":
 
                     MessageBox.Show("Ce nom d'utilisateur existe déjà.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     break;
             }
+
+            _serverSocket.Shutdown(SocketShutdown.Both);
+            _serverSocket.Close();
         }
     }
 }

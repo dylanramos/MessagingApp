@@ -26,3 +26,7 @@ C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\D
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.frmServer.resources
 C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\obj\Debug\Server.csproj.CopyComplete
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Microsoft.AspNetCore.Cryptography.Internal.xml
+C:\Users\Dylan\Desktop\MessagingApp\MessagingApp\Application\Server\Server\bin\Debug\Microsoft.AspNetCore.Cryptography.KeyDerivation.xml

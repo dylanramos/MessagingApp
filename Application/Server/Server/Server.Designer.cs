@@ -32,9 +32,6 @@
             this.cmdStop = new System.Windows.Forms.Button();
             this.lstlogs = new System.Windows.Forms.ListBox();
             this.cmdClose = new System.Windows.Forms.Button();
-            this.lsvClients = new System.Windows.Forms.ListView();
-            this.IpAddressColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.IdColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // cmdStart
@@ -64,9 +61,9 @@
             // 
             this.lstlogs.FormattingEnabled = true;
             this.lstlogs.ItemHeight = 21;
-            this.lstlogs.Location = new System.Drawing.Point(12, 292);
+            this.lstlogs.Location = new System.Drawing.Point(12, 40);
             this.lstlogs.Name = "lstlogs";
-            this.lstlogs.Size = new System.Drawing.Size(646, 235);
+            this.lstlogs.Size = new System.Drawing.Size(646, 508);
             this.lstlogs.TabIndex = 2;
             // 
             // cmdClose
@@ -82,36 +79,12 @@
             this.cmdClose.UseVisualStyleBackColor = false;
             this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
             // 
-            // lsvClients
-            // 
-            this.lsvClients.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.IpAddressColumn,
-            this.IdColumn});
-            this.lsvClients.HideSelection = false;
-            this.lsvClients.Location = new System.Drawing.Point(12, 38);
-            this.lsvClients.Name = "lsvClients";
-            this.lsvClients.Size = new System.Drawing.Size(646, 232);
-            this.lsvClients.TabIndex = 4;
-            this.lsvClients.UseCompatibleStateImageBehavior = false;
-            this.lsvClients.View = System.Windows.Forms.View.Details;
-            // 
-            // IpAddressColumn
-            // 
-            this.IpAddressColumn.Text = "Adresse IP";
-            this.IpAddressColumn.Width = 120;
-            // 
-            // IdColumn
-            // 
-            this.IdColumn.Text = "ID du client";
-            this.IdColumn.Width = 120;
-            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(696, 621);
-            this.Controls.Add(this.lsvClients);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lstlogs);
             this.Controls.Add(this.cmdStop);
@@ -131,9 +104,6 @@
         private System.Windows.Forms.Button cmdStop;
         private System.Windows.Forms.ListBox lstlogs;
         private System.Windows.Forms.Button cmdClose;
-        private System.Windows.Forms.ListView lsvClients;
-        private System.Windows.Forms.ColumnHeader IpAddressColumn;
-        private System.Windows.Forms.ColumnHeader IdColumn;
     }
 }
 

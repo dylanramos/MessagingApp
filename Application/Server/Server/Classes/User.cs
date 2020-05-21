@@ -8,10 +8,6 @@ namespace Server.Classes
 {
     class User
     {
-        private string _username;
-        private string _password;
-        private bool _online;
-
         /// <summary>
         /// User constructor
         /// </summary>
@@ -19,34 +15,36 @@ namespace Server.Classes
         /// <param name="password"></param>
         public User(string username, string password, bool online)
         {
-            _username = username;
-            _password = password;
-            _online = online;
+            Username = username;
+            Password = password;
+            Online = online;
         }
 
         /// <summary>
-        /// Gets the username
+        /// User's username
         /// </summary>
         public string Username
         {
-            get { return _username; }
+            get;
+            private set;
         }
 
         /// <summary>
-        /// Gets the password
+        /// User's hashed password
         /// </summary>
         public string Password
         {
-            get { return _password; }
+            get;
+            private set;
         }
 
         /// <summary>
         /// To know if the user is online or not
         /// </summary>
-        public bool IsOnline
+        public bool Online
         {
-            get { return _online; }
-            set { _online = value; }
+            get;
+            set;
         }
     }
 }

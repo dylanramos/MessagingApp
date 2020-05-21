@@ -54,7 +54,7 @@ namespace Server.Database
             command.CommandText = "CREATE TABLE Users (" +
                 "UserId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "UserName VARCHAR(45), " +
-                "UserPassword VARCHAR(50));";
+                "UserPassword VARCHAR(100));";
 
             command.CommandText += "CREATE TABLE Messages (" +
                 "MessageId INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -81,16 +81,16 @@ namespace Server.Database
         /// Creates a new user in the database
         /// </summary>
         /// <param name="user"></param>
-        public void CreateAccount(User user)
+        public void CreateAccount(string username, string password)
         {
-            ExecuteQuery("INSERT INTO Users(UserName, UserPassword) VALUES('" + user.Username + "', '" + user.Password + "')");
+            ExecuteQuery("INSERT INTO Users(UserName, UserPassword) VALUES('" + username + "', '" + password + "')");
         }
 
-        public bool CheckUserExists(User user)
+        public bool CheckUserExists(string username)
         {
             bool exists = false;
 
-            reader = ExecuteQuery("SELECT UserName AS username FROM Users WHERE UserName = '" + user.Username + "'");
+            reader = ExecuteQuery("SELECT UserName AS username FROM Users WHERE UserName = '" + username + "'");
 
             while (reader.Read())
             {
@@ -101,6 +101,19 @@ namespace Server.Database
             }
 
             return exists;
+        }
+
+        public User GetUserCredentials(string username)
+        {
+            User verifiedUser = null;
+            reader = ExecuteQuery("SELECT UserName, UserPassword FROM Users WHERE UserName = '" + username + "'");
+
+            while (reader.Read())
+            {
+                verifiedUser = new User(reader["UserName"].ToString(), reader["UserPassword"].ToString(), false);
+            }
+
+            return verifiedUser;
         }
     }
 }

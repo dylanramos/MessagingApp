@@ -1,5 +1,6 @@
 ﻿using Client.Forms;
 using Client.Views;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,9 +18,11 @@ namespace Client
 {
     public partial class frmLogin : Form
     {
-        const int SERVER_PORT = 3333;
+        const string SERVER_IP = "127.0.0.1";
+        const int SERVER_PORT = 3333;       
 
-        private Socket _clientSocket;
+        private Socket _serverSocket;
+        byte[] _buffer;
 
         public frmLogin()
         {
@@ -83,16 +87,11 @@ namespace Client
             {
                 try
                 {
-                    _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    _clientSocket.BeginConnect(new IPEndPoint(IPAddress.Loopback, SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+                    _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _serverSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
 
-                    byte[] buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text);
-                    _clientSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
-
-                    this.Close();
-
-                    frmChat chat = new frmChat();
-                    chat.Show();
+                    _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+                    _serverSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
                 }
                 catch (Exception exception)
                 {
@@ -109,7 +108,7 @@ namespace Client
         {
             try
             {
-                _clientSocket.EndConnect(asyncResult);
+                _serverSocket.EndConnect(asyncResult);
             }
             catch(Exception exception)
             {
@@ -119,7 +118,37 @@ namespace Client
 
         private void SendCallback(IAsyncResult asyncResult)
         {
-            _clientSocket.EndSend(asyncResult);
+            _serverSocket.EndSend(asyncResult);
+
+            byte[] buffer = new byte[_serverSocket.ReceiveBufferSize];
+            _serverSocket.Receive(buffer);
+
+            string data = Encoding.ASCII.GetString(buffer);
+            string[] words = data.Split(';');
+            string request = words[0];
+
+            switch (request)
+            {
+                case "LoginOk":
+
+                    Invoke((MethodInvoker)delegate
+                    {
+                        this.Close();
+                        frmChat chat = new frmChat();
+                        chat.Show();
+                    });
+
+                    break;
+
+                case "LoginNok":
+
+                    MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    break;
+            }
+
+            _serverSocket.Shutdown(SocketShutdown.Both);
+            _serverSocket.Close();
         }
     }
 }
