@@ -38,7 +38,7 @@
             // 
             this.cmdStart.BackColor = System.Drawing.Color.Olive;
             this.cmdStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdStart.Location = new System.Drawing.Point(476, 568);
+            this.cmdStart.Location = new System.Drawing.Point(593, 568);
             this.cmdStart.Name = "cmdStart";
             this.cmdStart.Size = new System.Drawing.Size(182, 41);
             this.cmdStart.TabIndex = 0;
@@ -49,21 +49,23 @@
             // cmdStop
             // 
             this.cmdStop.BackColor = System.Drawing.Color.Firebrick;
+            this.cmdStop.Enabled = false;
             this.cmdStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdStop.Location = new System.Drawing.Point(288, 568);
+            this.cmdStop.Location = new System.Drawing.Point(405, 568);
             this.cmdStop.Name = "cmdStop";
             this.cmdStop.Size = new System.Drawing.Size(182, 41);
             this.cmdStop.TabIndex = 1;
             this.cmdStop.Text = "Arrêter le serveur";
             this.cmdStop.UseVisualStyleBackColor = false;
+            this.cmdStop.Click += new System.EventHandler(this.cmdStop_Click);
             // 
             // lstlogs
             // 
             this.lstlogs.FormattingEnabled = true;
             this.lstlogs.ItemHeight = 21;
-            this.lstlogs.Location = new System.Drawing.Point(12, 40);
+            this.lstlogs.Location = new System.Drawing.Point(32, 40);
             this.lstlogs.Name = "lstlogs";
-            this.lstlogs.Size = new System.Drawing.Size(646, 508);
+            this.lstlogs.Size = new System.Drawing.Size(743, 508);
             this.lstlogs.TabIndex = 2;
             // 
             // cmdClose
@@ -71,7 +73,7 @@
             this.cmdClose.BackColor = System.Drawing.Color.Firebrick;
             this.cmdClose.FlatAppearance.BorderSize = 0;
             this.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdClose.Location = new System.Drawing.Point(660, 0);
+            this.cmdClose.Location = new System.Drawing.Point(779, 0);
             this.cmdClose.Name = "cmdClose";
             this.cmdClose.Size = new System.Drawing.Size(36, 32);
             this.cmdClose.TabIndex = 3;
@@ -84,7 +86,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
-            this.ClientSize = new System.Drawing.Size(696, 621);
+            this.ClientSize = new System.Drawing.Size(812, 621);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lstlogs);
             this.Controls.Add(this.cmdStop);
@@ -93,7 +95,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "frmServer";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Text = "frmServer";
             this.ResumeLayout(false);
 
         }

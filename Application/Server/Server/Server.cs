@@ -26,19 +26,42 @@ namespace Server
         private Socket _serverSocket, _clientSocket;
         private byte[] _buffer;
 
-        private List<User> _users;
-
         private delegate void log(string text); // To add a log from a different thread
 
         public frmServer()
         {
             InitializeComponent();
+
+            this.ConnectedUsers = new List<User>();
+            this.DisconnectedUsers = new List<User>();
+        }
+
+        /// <summary>
+        /// To know which user is connected
+        /// </summary>
+        private List<User> ConnectedUsers
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// To know which user is disconnected
+        /// </summary>
+        private List<User> DisconnectedUsers
+        {
+            get;
+            set;
         }
 
         private void cmdStart_Click(object sender, EventArgs e)
         {
+            cmdStart.Enabled = false;
+            cmdStop.Enabled = true;
+
             _databaseConnection = new DatabaseConnection();
-            _users = new List<User>();
+
+            this.DisconnectedUsers = _databaseConnection.GetUsers();
 
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT_NUMBER));
@@ -48,6 +71,23 @@ namespace Server
             AddLog(log);
 
             ClientsListening();
+        }
+
+        private void cmdStop_Click(object sender, EventArgs e)
+        {
+            cmdStop.Enabled = false;
+            cmdStart.Enabled = true;
+
+            if(_serverSocket.Connected)
+            {
+                _serverSocket.Shutdown(SocketShutdown.Both);
+                _serverSocket.Close();
+            }
+
+            string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
+            string log = dateTime + "Le serveur a bien été arrêté.";
+
+            AddLog(log);
         }
 
         private void ClientsListening()
@@ -107,14 +147,25 @@ namespace Server
                         {                      
                             if (passwordToCheck == realUser.Password)
                             {
-                                _users.Add(realUser);
+                                // Removes the user from the disconnected users list and adds him to the connected users list
+                                foreach(User disconnectedUser in this.DisconnectedUsers)
+                                {
+                                    if(disconnectedUser.Username == realUser.Username)
+                                    {
+                                        disconnectedUser.Online = true;
+                                        this.ConnectedUsers.Add(disconnectedUser);
+                                        this.DisconnectedUsers.Remove(disconnectedUser);
 
-                                log = dateTime + "L'utilisateur " + realUser.Username + "est maintenant connecté avec l'addresse IP " + _clientSocket.RemoteEndPoint;
+                                        break;
+                                    }
+                                }
+
+                                log = dateTime + "L'utilisateur " + realUser.Username + " s'est connecté avec l'addresse IP " + _clientSocket.RemoteEndPoint;
                                 lstlogs.Invoke(new log(AddLog), log);
 
                                 // Sending the request to the remote client
                                 _buffer = Encoding.ASCII.GetBytes("LoginOk;");
-                                _clientSocket.Send(_buffer);
+                                _clientSocket.Send(_buffer);  
                             }
                             else
                             {
@@ -150,11 +201,38 @@ namespace Server
                         {
                             _databaseConnection.CreateAccount(username, password);
 
+                            // Adds the new user to the disconnected users list
+                            User newUser = new User(username, "", false);
+                            this.DisconnectedUsers.Add(newUser);
+
                             log = dateTime + "Le compte de " + username + " a bien été créé.";
                             lstlogs.Invoke(new log(AddLog), log);
 
                             // Sending the request to the remote client
                             _buffer = Encoding.ASCII.GetBytes("AccountCreationOk;");
+                            _clientSocket.Send(_buffer);
+                        }
+
+                        break;
+
+                    case "Contacts":
+
+                        string senderUser = words[1];
+
+                        // Sends the connected users username
+                        foreach (User connectedUser in this.ConnectedUsers)
+                        {
+                            if (senderUser != connectedUser.Username)
+                            {
+                                _buffer = Encoding.ASCII.GetBytes(connectedUser.Username + "/Online;");
+                                _clientSocket.Send(_buffer);
+                            }
+                        }
+
+                        // Sends the disconnected users username
+                        foreach (User disconnectedUser in this.DisconnectedUsers)
+                        {
+                            _buffer = Encoding.ASCII.GetBytes(disconnectedUser.Username + "/Offline;");
                             _clientSocket.Send(_buffer);
                         }
 
@@ -175,7 +253,7 @@ namespace Server
         private void cmdClose_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
+        }     
 
         /// <summary>
         /// Adds the log to the oder logs list

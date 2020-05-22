@@ -21,7 +21,6 @@ namespace Client
         const int SERVER_PORT = 3333;       
 
         private Socket _serverSocket;
-        byte[] _buffer;
 
         public frmAccountCreation()
         {
@@ -118,14 +117,16 @@ namespace Client
 
         private void ConnectCallback(IAsyncResult asyncResult)
         {
+            byte[] buffer;
+
             try
             {
                 _serverSocket.EndConnect(asyncResult);
 
                 // Begin sending the data to the remote server
-                _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+                buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + txtPassword.Text + ";");
 
-                _serverSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                _serverSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
             }
             catch (Exception exception)
             {
@@ -168,6 +169,11 @@ namespace Client
 
             _serverSocket.Shutdown(SocketShutdown.Both);
             _serverSocket.Close();
+        }
+
+        private void cmdClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

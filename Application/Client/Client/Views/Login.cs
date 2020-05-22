@@ -22,7 +22,6 @@ namespace Client
         const int SERVER_PORT = 3333;       
 
         private Socket _serverSocket;
-        byte[] _buffer;
 
         public frmLogin()
         {
@@ -85,13 +84,15 @@ namespace Client
         {
             if(!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
             {
+                byte[] buffer;
+
                 try
                 {
                     _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     _serverSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
 
-                    _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
-                    _serverSocket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
+                    buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+                    _serverSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
                 }
                 catch (Exception exception)
                 {
@@ -134,7 +135,7 @@ namespace Client
                     Invoke((MethodInvoker)delegate
                     {
                         this.Close();
-                        frmChat chat = new frmChat();
+                        frmChat chat = new frmChat(txtUsername.Text);
                         chat.Show();
                     });
 
@@ -149,6 +150,11 @@ namespace Client
 
             _serverSocket.Shutdown(SocketShutdown.Both);
             _serverSocket.Close();
+        }
+
+        private void cmdClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

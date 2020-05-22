@@ -115,5 +115,23 @@ namespace Server.Database
 
             return verifiedUser;
         }
+
+        public List<User> GetUsers()
+        {
+            List<User> users = new List<User>();
+
+            reader = ExecuteQuery("SELECT UserName FROM Users");
+
+            while (reader.Read())
+            {
+                if (reader["UserName"].ToString() != "")
+                {
+                    User user = new User(reader["UserName"].ToString(), "", false);
+                    users.Add(user);
+                }
+            }
+
+            return users;
+        }
     }
 }
