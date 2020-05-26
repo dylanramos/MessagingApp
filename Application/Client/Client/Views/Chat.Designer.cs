@@ -28,14 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmChat));
             this.pnlOnlineContacts = new System.Windows.Forms.Panel();
-            this.pnlChat = new System.Windows.Forms.Panel();
             this.lblOnline = new System.Windows.Forms.Label();
             this.pnlOfflineContacts = new System.Windows.Forms.Panel();
             this.lblOffline = new System.Windows.Forms.Label();
             this.cmdClose = new System.Windows.Forms.Button();
+            this.rtbMessage = new System.Windows.Forms.RichTextBox();
+            this.ptbSend = new System.Windows.Forms.PictureBox();
+            this.flpChat = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlOnlineContacts.SuspendLayout();
             this.pnlOfflineContacts.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ptbSend)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlOnlineContacts
@@ -49,13 +53,6 @@
             this.pnlOnlineContacts.Name = "pnlOnlineContacts";
             this.pnlOnlineContacts.Size = new System.Drawing.Size(176, 232);
             this.pnlOnlineContacts.TabIndex = 0;
-            // 
-            // pnlChat
-            // 
-            this.pnlChat.Location = new System.Drawing.Point(249, 57);
-            this.pnlChat.Name = "pnlChat";
-            this.pnlChat.Size = new System.Drawing.Size(442, 372);
-            this.pnlChat.TabIndex = 1;
             // 
             // lblOnline
             // 
@@ -102,15 +99,48 @@
             this.cmdClose.UseVisualStyleBackColor = false;
             this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
             // 
+            // rtbMessage
+            // 
+            this.rtbMessage.Location = new System.Drawing.Point(243, 405);
+            this.rtbMessage.Name = "rtbMessage";
+            this.rtbMessage.Size = new System.Drawing.Size(374, 62);
+            this.rtbMessage.TabIndex = 1;
+            this.rtbMessage.Text = "";
+            this.rtbMessage.Visible = false;
+            // 
+            // ptbSend
+            // 
+            this.ptbSend.BackColor = System.Drawing.Color.IndianRed;
+            this.ptbSend.Image = ((System.Drawing.Image)(resources.GetObject("ptbSend.Image")));
+            this.ptbSend.Location = new System.Drawing.Point(623, 412);
+            this.ptbSend.Name = "ptbSend";
+            this.ptbSend.Size = new System.Drawing.Size(51, 50);
+            this.ptbSend.TabIndex = 5;
+            this.ptbSend.TabStop = false;
+            this.ptbSend.Visible = false;
+            this.ptbSend.Click += new System.EventHandler(this.ptbSend_Click);
+            this.ptbSend.MouseLeave += new System.EventHandler(this.ptbSend_MouseLeave);
+            this.ptbSend.MouseHover += new System.EventHandler(this.ptbSend_MouseHover);
+            // 
+            // flpChat
+            // 
+            this.flpChat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.flpChat.Location = new System.Drawing.Point(243, 41);
+            this.flpChat.Name = "flpChat";
+            this.flpChat.Size = new System.Drawing.Size(431, 358);
+            this.flpChat.TabIndex = 6;
+            // 
             // frmChat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(739, 479);
+            this.Controls.Add(this.flpChat);
+            this.Controls.Add(this.ptbSend);
+            this.Controls.Add(this.rtbMessage);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.pnlOfflineContacts);
-            this.Controls.Add(this.pnlChat);
             this.Controls.Add(this.pnlOnlineContacts);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -122,6 +152,7 @@
             this.pnlOnlineContacts.PerformLayout();
             this.pnlOfflineContacts.ResumeLayout(false);
             this.pnlOfflineContacts.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ptbSend)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -129,10 +160,12 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlOnlineContacts;
-        private System.Windows.Forms.Panel pnlChat;
         private System.Windows.Forms.Label lblOnline;
         private System.Windows.Forms.Panel pnlOfflineContacts;
         private System.Windows.Forms.Label lblOffline;
         private System.Windows.Forms.Button cmdClose;
+        private System.Windows.Forms.RichTextBox rtbMessage;
+        private System.Windows.Forms.PictureBox ptbSend;
+        private System.Windows.Forms.FlowLayoutPanel flpChat;
     }
 }

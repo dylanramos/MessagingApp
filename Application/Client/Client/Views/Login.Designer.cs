@@ -88,8 +88,7 @@
             this.txtUsername.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(278, 22);
-            this.txtUsername.TabIndex = 0;
-            this.txtUsername.TabStop = false;
+            this.txtUsername.TabIndex = 1;
             this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
             this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
@@ -120,8 +119,7 @@
             this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(278, 22);
-            this.txtPassword.TabIndex = 1;
-            this.txtPassword.TabStop = false;
+            this.txtPassword.TabIndex = 2;
             this.txtPassword.UseSystemPasswordChar = true;
             this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
             this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
@@ -195,7 +193,7 @@
             this.cmdClose.Location = new System.Drawing.Point(385, -2);
             this.cmdClose.Name = "cmdClose";
             this.cmdClose.Size = new System.Drawing.Size(36, 32);
-            this.cmdClose.TabIndex = 12;
+            this.cmdClose.TabIndex = 0;
             this.cmdClose.Text = "X";
             this.cmdClose.UseVisualStyleBackColor = false;
             this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);

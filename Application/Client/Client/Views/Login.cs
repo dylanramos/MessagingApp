@@ -21,7 +21,8 @@ namespace Client
         const string SERVER_IP = "127.0.0.1";
         const int SERVER_PORT = 3333;       
 
-        private Socket _serverSocket;
+        private Socket _socket;
+        private byte[] _buffer;
 
         public frmLogin()
         {
@@ -32,7 +33,7 @@ namespace Client
             loginButton.Size = new Size(128, 44);
             loginButton.Text = "Se connecter";
             loginButton.Click += new EventHandler(this.LoginButtonClicked);
-            this.Controls.Add(loginButton);
+            this.Controls.Add(loginButton);     
         }
 
         private void lblAccountCreation_MouseHover(object sender, EventArgs e)
@@ -84,15 +85,15 @@ namespace Client
         {
             if(!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
             {
-                byte[] buffer;
+                _buffer = new byte[1024];
 
                 try
                 {
-                    _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    _serverSocket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
 
-                    buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
-                    _serverSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
+                    _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+                    _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
                 }
                 catch (Exception exception)
                 {
@@ -109,7 +110,7 @@ namespace Client
         {
             try
             {
-                _serverSocket.EndConnect(asyncResult);
+                _socket.EndConnect(asyncResult);
             }
             catch(Exception exception)
             {
@@ -119,12 +120,17 @@ namespace Client
 
         private void SendCallback(IAsyncResult asyncResult)
         {
-            _serverSocket.EndSend(asyncResult);
+            _socket.EndSend(asyncResult);
 
-            byte[] buffer = new byte[_serverSocket.ReceiveBufferSize];
-            _serverSocket.Receive(buffer);
+            _buffer = new byte[_socket.ReceiveBufferSize];
+            _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);               
+        }
 
-            string data = Encoding.ASCII.GetString(buffer);
+        private void ReceiveCallback(IAsyncResult asyncResult)
+        {
+            _socket.EndReceive(asyncResult);
+
+            string data = Encoding.ASCII.GetString(_buffer);
             string[] words = data.Split(';');
             string request = words[0];
 
@@ -134,8 +140,8 @@ namespace Client
 
                     Invoke((MethodInvoker)delegate
                     {
-                        this.Close();
                         frmChat chat = new frmChat(txtUsername.Text);
+                        this.Close();
                         chat.Show();
                     });
 
@@ -143,17 +149,17 @@ namespace Client
 
                 case "LoginNok":
 
-                    MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);    
 
                     break;
             }
 
-            _serverSocket.Shutdown(SocketShutdown.Both);
-            _serverSocket.Close();
+            _socket.Shutdown(SocketShutdown.Both);
+            _socket.Close();
         }
 
         private void cmdClose_Click(object sender, EventArgs e)
-        {
+        {  
             Application.Exit();
         }
     }

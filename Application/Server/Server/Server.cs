@@ -23,6 +23,8 @@ namespace Server
 
         private DatabaseConnection _databaseConnection;
 
+        private List<User> _Users;
+
         private Socket _serverSocket, _clientSocket;
         private byte[] _buffer;
 
@@ -32,26 +34,10 @@ namespace Server
         {
             InitializeComponent();
 
-            this.ConnectedUsers = new List<User>();
-            this.DisconnectedUsers = new List<User>();
-        }
+            _Users = new List<User>();
 
-        /// <summary>
-        /// To know which user is connected
-        /// </summary>
-        private List<User> ConnectedUsers
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// To know which user is disconnected
-        /// </summary>
-        private List<User> DisconnectedUsers
-        {
-            get;
-            set;
+            _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT_NUMBER));
         }
 
         private void cmdStart_Click(object sender, EventArgs e)
@@ -61,10 +47,9 @@ namespace Server
 
             _databaseConnection = new DatabaseConnection();
 
-            this.DisconnectedUsers = _databaseConnection.GetUsers();
+            _Users = _databaseConnection.GetUsers();
 
-            _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT_NUMBER));
+            
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "Le serveur a bien été démarré.";
 
@@ -78,7 +63,7 @@ namespace Server
             cmdStop.Enabled = false;
             cmdStart.Enabled = true;
 
-            if(_serverSocket.Connected)
+            if (_serverSocket.Connected != false)
             {
                 _serverSocket.Shutdown(SocketShutdown.Both);
                 _serverSocket.Close();
@@ -88,14 +73,18 @@ namespace Server
             string log = dateTime + "Le serveur a bien été arrêté.";
 
             AddLog(log);
+
+            lstConnectedUsers.Items.Clear();
         }
 
+        /// <summary>
+        /// Starts to listen to clients
+        /// </summary>
         private void ClientsListening()
         {
             try
             {
                 _serverSocket.Listen(0);
-
                 _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), null);            
             }
             catch (Exception exception)
@@ -105,10 +94,10 @@ namespace Server
         }
 
         private void AcceptCallback(IAsyncResult asyncResult)
-        {
+        {        
             try
             {
-                _clientSocket = _serverSocket.EndAccept(asyncResult);
+                _clientSocket = _serverSocket.EndAccept(asyncResult);        
 
                 _buffer = new byte[_clientSocket.ReceiveBufferSize];
                 _clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
@@ -123,130 +112,239 @@ namespace Server
         {
             _clientSocket.EndReceive(asyncResult);
 
-            string log = "", request;
+            string request;
 
             try
             {
                 string data = Encoding.ASCII.GetString(_buffer);
                 string[] words = data.Split(';');
 
-                request = words[0];               
-
-                string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
+                request = words[0];                            
 
                 switch (request)
                 {
                     case "Login":
 
-                        string usernameToCheck = words[1];
-                        string passwordToCheck = words[2];
+                        Login(words[1], words[2]);
 
-                        User realUser = _databaseConnection.GetUserCredentials(usernameToCheck);
+                        break;
 
-                        if(realUser != null)
-                        {                      
-                            if (passwordToCheck == realUser.Password)
-                            {
-                                // Removes the user from the disconnected users list and adds him to the connected users list
-                                foreach(User disconnectedUser in this.DisconnectedUsers)
-                                {
-                                    if(disconnectedUser.Username == realUser.Username)
-                                    {
-                                        disconnectedUser.Online = true;
-                                        this.ConnectedUsers.Add(disconnectedUser);
-                                        this.DisconnectedUsers.Remove(disconnectedUser);
+                    case "Logout":
 
-                                        break;
-                                    }
-                                }
+                        Logout(words[1]);                        
 
-                                log = dateTime + "L'utilisateur " + realUser.Username + " s'est connecté avec l'addresse IP " + _clientSocket.RemoteEndPoint;
-                                lstlogs.Invoke(new log(AddLog), log);
-
-                                // Sending the request to the remote client
-                                _buffer = Encoding.ASCII.GetBytes("LoginOk;");
-                                _clientSocket.Send(_buffer);  
-                            }
-                            else
-                            {
-                                // Sends to the client that the credentials are wrong
-                                _buffer = Encoding.ASCII.GetBytes("LoginNok;");
-                                _clientSocket.Send(_buffer);
-                            }
-                        }
-                        else
-                        {
-                            // Sends to the client that the credentials are wrong
-                            _buffer = Encoding.ASCII.GetBytes("LoginNok;");
-                            _clientSocket.Send(_buffer);
-                        }
-                        
                         break;
 
                     case "AccountCreation":
 
-                        string username = words[1];
-                        string password = words[2];
-                        bool userExists;
-
-                        userExists = _databaseConnection.CheckUserExists(username);
-
-                        if (userExists == true)
-                        {
-                            // Sending the request to the remote client
-                            _buffer = Encoding.ASCII.GetBytes("AccountCreationNok;");
-                            _clientSocket.Send(_buffer);
-                        }
-                        else
-                        {
-                            _databaseConnection.CreateAccount(username, password);
-
-                            // Adds the new user to the disconnected users list
-                            User newUser = new User(username, "", false);
-                            this.DisconnectedUsers.Add(newUser);
-
-                            log = dateTime + "Le compte de " + username + " a bien été créé.";
-                            lstlogs.Invoke(new log(AddLog), log);
-
-                            // Sending the request to the remote client
-                            _buffer = Encoding.ASCII.GetBytes("AccountCreationOk;");
-                            _clientSocket.Send(_buffer);
-                        }
+                        AccountCreation(words[1], words[2]);             
 
                         break;
 
                     case "Contacts":
 
-                        string senderUser = words[1];
-
-                        // Sends the connected users username
-                        foreach (User connectedUser in this.ConnectedUsers)
-                        {
-                            if (senderUser != connectedUser.Username)
-                            {
-                                _buffer = Encoding.ASCII.GetBytes(connectedUser.Username + "/Online;");
-                                _clientSocket.Send(_buffer);
-                            }
-                        }
-
-                        // Sends the disconnected users username
-                        foreach (User disconnectedUser in this.DisconnectedUsers)
-                        {
-                            _buffer = Encoding.ASCII.GetBytes(disconnectedUser.Username + "/Offline;");
-                            _clientSocket.Send(_buffer);
-                        }
+                        GetContacts(words[1]);
 
                         break;
-                }   
 
-                _clientSocket.Shutdown(SocketShutdown.Both);
-                _clientSocket.Close();
+                    case "Message":
+
+                        UserMessageSent(words[1], words[2], words[3], words[4]);
+
+                        break;
+
+                    case "Messages":
+
+                        GetAllMessages(words[1], words[2]);
+
+                        break;
+                }
 
                 ClientsListening();
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void Login(string usernameToCheck, string passwordToCheck)
+        {
+            User realUser = _databaseConnection.GetUserCredentials(usernameToCheck);
+
+            if (realUser != null)
+            {
+                if (passwordToCheck == realUser.Password)
+                {
+                    // Removes the user from the disconnected users list and adds him to the connected users list
+                    foreach (User user in _Users)
+                    {
+                        if (user.Username == realUser.Username)
+                        {
+                            user.Socket = _clientSocket;
+                            user.Online = true;
+
+                            break;
+                        }
+                    }
+
+                    // Sending the request to the remote client
+                    _buffer = Encoding.ASCII.GetBytes("LoginOk;");
+                    _clientSocket.Send(_buffer);
+                }
+                else
+                {
+                    // Sends to the client that the credentials are wrong
+                    _buffer = Encoding.ASCII.GetBytes("LoginNok;");
+                    _clientSocket.Send(_buffer);
+                }
+            }
+            else
+            {
+                // Sends to the client that the credentials are wrong
+                _buffer = Encoding.ASCII.GetBytes("LoginNok;");
+                _clientSocket.Send(_buffer);
+            }
+        }
+
+        private void Logout(string userToDisconnect)
+        {
+            string log = "";
+            string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
+
+            foreach (User user in _Users)
+            {
+                if (user.Username == userToDisconnect)
+                {
+                    user.Socket.Shutdown(SocketShutdown.Both);
+                    user.Socket.Close();
+                }
+            }
+
+            lstConnectedUsers.Items.Clear();
+
+            foreach (User user in _Users)
+            {
+                Invoke((MethodInvoker)delegate
+                {
+                    lstConnectedUsers.Items.Add(user.Username);
+                });
+            }
+
+            log = dateTime + "L'utilisateur " + userToDisconnect + " s'est déconnecté.";
+            lstlogs.Invoke(new log(AddLog), log);
+        }
+
+        private void AccountCreation(string username, string password)
+        {
+            string log = "";
+            string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
+            bool userExists;
+
+            userExists = _databaseConnection.CheckUserExists(username);
+
+            if (userExists == true)
+            {
+                // Sending the request to the remote client
+                _buffer = Encoding.ASCII.GetBytes("AccountCreationNok;");
+                _clientSocket.Send(_buffer);
+            }
+            else
+            {
+                _databaseConnection.CreateAccount(username, password);
+
+                // Adds the new user to the disconnected users list
+                User newUser = new User(username, "", false);
+                _Users.Add(newUser);
+
+                log = dateTime + "Le compte de " + username + " a bien été créé.";
+                lstlogs.Invoke(new log(AddLog), log);
+
+                // Sending the request to the remote client
+                _buffer = Encoding.ASCII.GetBytes("AccountCreationOk;");
+                _clientSocket.Send(_buffer);
+            }
+        }
+
+        private void GetContacts(string senderUser)
+        {
+            string log = "";
+            string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
+            string dataToSend = "Contacts;";
+
+            log = dateTime + "L'utilisateur " + senderUser + " s'est connecté";
+            lstlogs.Invoke(new log(AddLog), log);
+
+            Invoke((MethodInvoker)delegate
+            {
+                lstConnectedUsers.Items.Add(senderUser);
+            });
+
+            // Sends the connected users username
+            foreach (User user in _Users)
+            {
+                if (senderUser != user.Username && user.Online == true)
+                {
+                    dataToSend += user.Username + "/Online;";
+                }
+            }
+
+            // Sends the disconnected users username
+            foreach (User user in _Users)
+            {
+                if (senderUser != user.Username && user.Online == false)
+                {
+                    dataToSend += user.Username + "/Offline;";
+                }      
+            }
+
+            _buffer = Encoding.ASCII.GetBytes(dataToSend);
+            _clientSocket.Send(_buffer);
+        }
+
+        private void UserMessageSent(string senderUser, string receiverUser, string message, string date)
+        {
+            // Saves the message in the database
+            _databaseConnection.SaveMessage(senderUser, receiverUser, message, date);
+        }
+
+        private void GetAllMessages(string senderUser, string receiverUser)
+        {
+            string dataToSend = "Messages;" + receiverUser + ";";
+            List<string> senderMessages = new List<string>();
+            List<string> receiverMessages = new List<string>();
+
+            senderMessages = _databaseConnection.GetSenderMessages(senderUser, receiverUser);
+
+            foreach (string messages in senderMessages)
+            {
+                List<string> text = messages.Split('/').ToList();
+                string message = text[0];
+                string date = text[1];
+
+                dataToSend += message + "/" + date + "/Sender;";
+            }
+
+            receiverMessages = _databaseConnection.GetReceiverMessages(senderUser, receiverUser);
+
+            foreach (string messages in receiverMessages)
+            {
+                List<string> text = messages.Split('/').ToList();
+                string message = text[0];
+                string date = text[1];
+
+                dataToSend += message + "/" + date + "/Receiver;";
+            }
+
+            foreach (User user in _Users)
+            {
+                if(user.Username == senderUser)
+                {
+                    _buffer = Encoding.ASCII.GetBytes(dataToSend);
+                    _clientSocket.Send(_buffer);
+
+                    break;
+                }
             }
         }
 

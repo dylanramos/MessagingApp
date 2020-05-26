@@ -59,6 +59,7 @@ namespace Server.Database
             command.CommandText += "CREATE TABLE Messages (" +
                 "MessageId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "MessageText TEXT(250), " +
+                "MessageDate VARCHAR(20), " +
                 "ReceiverUserId INT, " +
                 "UserId INT," +
                 "CONSTRAINT FK_UserId FOREIGN KEY(UserId) REFERENCES Users(UserId));";
@@ -132,6 +133,105 @@ namespace Server.Database
             }
 
             return users;
+        }
+
+        public void SaveMessage(string senderUser, string receiverUser, string message, string date)
+        {
+            int senderUserId = 0, receiverUserId = 0;
+
+            // Gets the sender user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+
+            while (reader.Read())
+            {
+                senderUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            // Gets the receiver user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
+
+            while (reader.Read())
+            {
+                receiverUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            ExecuteQuery("INSERT INTO Messages(MessageText, MessageDate, ReceiverUserId, UserId) VALUES('" + message + "', '" + date + "', " + receiverUserId + ", " + senderUserId + ")");
+        }
+
+        /// <summary>
+        /// Gets all the messages of the sender
+        /// </summary>
+        /// <param name="senderUser"></param>
+        /// <param name="receiverUser"></param>
+        /// <returns></returns>
+        public List<string> GetSenderMessages(string senderUser, string receiverUser)
+        {
+            List<string> messages = new List<string>();
+
+            int senderUserId = 0, receiverUserId = 0;
+
+            // Gets the sender user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+
+            while (reader.Read())
+            {
+                senderUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            // Gets the receiver user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
+
+            while (reader.Read())
+            {
+                receiverUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            reader = ExecuteQuery("SELECT MessageText, MessageDate FROM Messages WHERE UserId = " + senderUserId + " AND ReceiverUserId = " + receiverUserId);
+
+            while(reader.Read())
+            {
+                messages.Add(reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString());
+            }
+
+            return messages;
+        }
+
+        /// <summary>
+        /// Gets all the messages of the receiver
+        /// </summary>
+        /// <param name="senderUser"></param>
+        /// <param name="receiverUser"></param>
+        /// <returns></returns>
+        public List<string> GetReceiverMessages(string senderUser, string receiverUser)
+        {
+            List<string> messages = new List<string>();
+
+            int senderUserId = 0, receiverUserId = 0;
+
+            // Gets the sender user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+
+            while (reader.Read())
+            {
+                senderUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            // Gets the receiver user id
+            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
+
+            while (reader.Read())
+            {
+                receiverUserId = int.Parse(reader["UserId"].ToString());
+            }
+
+            reader = ExecuteQuery("SELECT MessageText, MessageDate FROM Messages WHERE UserId = " + receiverUserId + " AND ReceiverUserId = " + senderUserId);
+
+            while (reader.Read())
+            {
+                messages.Add(reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString());
+            }
+
+            return messages;
         }
     }
 }
