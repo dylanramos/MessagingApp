@@ -158,15 +158,9 @@ namespace Server.Database
             ExecuteQuery("INSERT INTO Messages(MessageText, MessageDate, ReceiverUserId, UserId) VALUES('" + message + "', '" + date + "', " + receiverUserId + ", " + senderUserId + ")");
         }
 
-        /// <summary>
-        /// Gets all the messages of the sender
-        /// </summary>
-        /// <param name="senderUser"></param>
-        /// <param name="receiverUser"></param>
-        /// <returns></returns>
-        public List<string> GetSenderMessages(string senderUser, string receiverUser)
+        public string GetMessages(string senderUser, string receiverUser)
         {
-            List<string> messages = new List<string>();
+            string messages = "";
 
             int senderUserId = 0, receiverUserId = 0;
 
@@ -186,49 +180,18 @@ namespace Server.Database
                 receiverUserId = int.Parse(reader["UserId"].ToString());
             }
 
-            reader = ExecuteQuery("SELECT MessageText, MessageDate FROM Messages WHERE UserId = " + senderUserId + " AND ReceiverUserId = " + receiverUserId);
-
-            while(reader.Read())
-            {
-                messages.Add(reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString());
-            }
-
-            return messages;
-        }
-
-        /// <summary>
-        /// Gets all the messages of the receiver
-        /// </summary>
-        /// <param name="senderUser"></param>
-        /// <param name="receiverUser"></param>
-        /// <returns></returns>
-        public List<string> GetReceiverMessages(string senderUser, string receiverUser)
-        {
-            List<string> messages = new List<string>();
-
-            int senderUserId = 0, receiverUserId = 0;
-
-            // Gets the sender user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+            reader = ExecuteQuery("SELECT UserId, MessageText, MessageDate FROM Messages WHERE UserId IN (" + senderUserId + ", " + receiverUserId + ") AND ReceiverUserId IN (" + senderUserId + ", " + receiverUserId + ")");
 
             while (reader.Read())
             {
-                senderUserId = int.Parse(reader["UserId"].ToString());
-            }
-
-            // Gets the receiver user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
-
-            while (reader.Read())
-            {
-                receiverUserId = int.Parse(reader["UserId"].ToString());
-            }
-
-            reader = ExecuteQuery("SELECT MessageText, MessageDate FROM Messages WHERE UserId = " + receiverUserId + " AND ReceiverUserId = " + senderUserId);
-
-            while (reader.Read())
-            {
-                messages.Add(reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString());
+                if(int.Parse(reader["UserId"].ToString()) == senderUserId)
+                {
+                    messages += reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString() + "/Sender;";
+                }
+                else
+                {
+                    messages += reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString() + "/Receiver;";
+                }             
             }
 
             return messages;

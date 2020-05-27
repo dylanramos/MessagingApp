@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Client.Forms
@@ -28,9 +28,9 @@ namespace Client.Forms
 
             _connectedUser = username;
             _buffer = new byte[1024];
-
+            
             LoadContacts();
-        }
+        }    
 
         private void ptbSend_MouseHover(object sender, EventArgs e)
         {
@@ -56,9 +56,9 @@ namespace Client.Forms
             string date = DateTime.Now.ToString("dd MMMM yyyy H:mm");
 
             _buffer = Encoding.ASCII.GetBytes("Message;" + _connectedUser + ";" + _selectedUser + ";" + rtbMessage.Text + ";" + date + ";");
-            _socket.Send(_buffer);
-            MessageBox.Show("message envoyé");
-            //_socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+
+            rtbMessage.Clear();
         }
 
         private void StartConnection()
@@ -122,6 +122,12 @@ namespace Client.Forms
 
             switch (request)
             {
+                case "Logout":
+
+                    Application.Exit();
+
+                    break;
+
                 case "Contacts":
 
                     int x = 50;
@@ -172,7 +178,7 @@ namespace Client.Forms
 
                             offlinePanelY += 50;
                         }
-                    }
+                    }        
 
                     break;
 
@@ -180,66 +186,77 @@ namespace Client.Forms
 
                     string selectedUser = words[1];
 
+                    pnlChat.Controls.Clear();
+
                     // If the contact is selected we show the message
                     if (_selectedUser == selectedUser)
                     {
+                        int yPosition = 0;
+
                         for (int i = 2; i < words.Length - 1; i++)
                         {
                             List<string> message = words[i].Split('/').ToList();
 
-                            Panel panel = new Panel();
-                            panel.Width = 431;
-                            panel.Height = 30;
-                            panel.AutoSizeMode = AutoSizeMode.GrowOnly;
-
                             Label fromLabel = new Label();
                             fromLabel.AutoSize = true;
                             fromLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold);
+
+                            Label messageLabel = new Label();                       
+                            messageLabel.AutoSize = true;
+                            messageLabel.ForeColor = Color.Tan;
+                            messageLabel.Text = message[0];
 
                             Label dateLabel = new Label();
                             dateLabel.AutoSize = true;
                             dateLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Italic);
                             dateLabel.Text = message[1];
 
-                            Label messageLabel = new Label();
-                            messageLabel.AutoSize = true;
-                            messageLabel.ForeColor = Color.Tan;
-                            messageLabel.Text = message[0];
-                            
-
-                            if (message[2] == "Sender")
-                            {     
-                                fromLabel.Text = "Moi";
-
-                                fromLabel.Location = new Point(panel.Width - fromLabel.Width, 0);
-                                messageLabel.Location = new Point(panel.Width - messageLabel.Width, 0);
-                                dateLabel.Location = new Point(panel.Width - dateLabel.Width, 0);
-                            }
-                            else
-                            {
-                                fromLabel.Text = selectedUser;
-                            }
-
-                            
-                            panel.Controls.Add(messageLabel);
-
-                            if (flpChat.InvokeRequired)
+                            if (pnlChat.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
-                                    flpChat.Controls.Add(fromLabel);
-                                    flpChat.Controls.Add(panel);
-                                    flpChat.Controls.Add(dateLabel);
+                                    pnlChat.Controls.Add(fromLabel);
+                                    pnlChat.Controls.Add(messageLabel);
+                                    pnlChat.Controls.Add(dateLabel);
                                 });
                             }
                             else
                             {
-                                flpChat.Controls.Add(fromLabel);
-                                flpChat.Controls.Add(panel);
-                                flpChat.Controls.Add(dateLabel);
+                                pnlChat.Controls.Add(fromLabel);
+                                pnlChat.Controls.Add(messageLabel);
+                                pnlChat.Controls.Add(dateLabel);
                             }
+
+                            if (message[2] == "Sender")
+                            {
+                                Invoke((MethodInvoker)delegate
+                                {
+                                    fromLabel.Text = "Moi";
+
+                                    fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width, yPosition);
+                                    yPosition += messageLabel.Height;
+                                    messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width, yPosition);
+                                    yPosition += dateLabel.Height;
+                                    dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width, yPosition);
+                                    yPosition += fromLabel.Height + 10;
+                                });    
+                            }
+                            else
+                            {
+                                Invoke((MethodInvoker)delegate
+                                {
+                                    fromLabel.Text = selectedUser;
+
+                                    fromLabel.Location = new Point(0, yPosition);
+                                    yPosition += messageLabel.Height;
+                                    messageLabel.Location = new Point(0, yPosition);
+                                    yPosition += dateLabel.Height;
+                                    dateLabel.Location = new Point(0, yPosition);
+                                    yPosition += fromLabel.Height + 10;
+                                });
+                            }     
                         }
-                    }                  
+                    }
 
                     break;
             }
@@ -259,35 +276,13 @@ namespace Client.Forms
                 MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            flpChat.Visible = true;
+            pnlChat.Visible = true;
             rtbMessage.Visible = true;
             ptbSend.Visible = true;
 
-            flpChat.Controls.Clear();
-
-            // Enables all the buttons
-            foreach(Control control in pnlOnlineContacts.Controls)
-            {
-                Button button = control as Button;
-
-                if(button != null)
-                {
-                    button.Enabled = true;
-                }                
-            }
-
-            foreach(Control control in pnlOfflineContacts.Controls)
-            {
-                Button button = control as Button;
-
-                if (button != null)
-                {
-                    button.Enabled = true;
-                }
-            }
+            pnlChat.Controls.Clear();
 
             Button clickedButton = sender as Button;
-            clickedButton.Enabled = false;
             _selectedUser = clickedButton.Text;
 
             _buffer = Encoding.ASCII.GetBytes("Messages;" + _connectedUser + ";" + _selectedUser + ";");
@@ -296,9 +291,17 @@ namespace Client.Forms
 
         private void cmdClose_Click(object sender, EventArgs e)
         {
+            StartConnection();
             
-
-            Application.Exit();
+            try
+            {
+                _buffer = Encoding.ASCII.GetBytes("Logout;" + _connectedUser + ";");
+                _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            }
+            catch(Exception exception)
+            {
+                Application.Exit();
+            }
         }
     }
 }

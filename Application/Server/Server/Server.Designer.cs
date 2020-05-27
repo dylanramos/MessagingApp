@@ -32,7 +32,9 @@
             this.cmdStop = new System.Windows.Forms.Button();
             this.lstlogs = new System.Windows.Forms.ListBox();
             this.cmdClose = new System.Windows.Forms.Button();
-            this.lstConnectedUsers = new System.Windows.Forms.ListBox();
+            this.lsvConnectedUsers = new System.Windows.Forms.ListView();
+            this.UserColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IpColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // cmdStart
@@ -83,14 +85,28 @@
             this.cmdClose.UseVisualStyleBackColor = false;
             this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
             // 
-            // lstConnectedUsers
+            // lsvConnectedUsers
             // 
-            this.lstConnectedUsers.FormattingEnabled = true;
-            this.lstConnectedUsers.ItemHeight = 21;
-            this.lstConnectedUsers.Location = new System.Drawing.Point(42, 40);
-            this.lstConnectedUsers.Name = "lstConnectedUsers";
-            this.lstConnectedUsers.Size = new System.Drawing.Size(350, 277);
-            this.lstConnectedUsers.TabIndex = 4;
+            this.lsvConnectedUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.UserColumn,
+            this.IpColumn});
+            this.lsvConnectedUsers.HideSelection = false;
+            this.lsvConnectedUsers.Location = new System.Drawing.Point(45, 40);
+            this.lsvConnectedUsers.Name = "lsvConnectedUsers";
+            this.lsvConnectedUsers.Size = new System.Drawing.Size(339, 277);
+            this.lsvConnectedUsers.TabIndex = 4;
+            this.lsvConnectedUsers.UseCompatibleStateImageBehavior = false;
+            this.lsvConnectedUsers.View = System.Windows.Forms.View.Details;
+            // 
+            // UserColumn
+            // 
+            this.UserColumn.Text = "Utilisateur";
+            this.UserColumn.Width = 141;
+            // 
+            // IpColumn
+            // 
+            this.IpColumn.Text = "Adresse IP";
+            this.IpColumn.Width = 137;
             // 
             // frmServer
             // 
@@ -98,7 +114,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(1210, 404);
-            this.Controls.Add(this.lstConnectedUsers);
+            this.Controls.Add(this.lsvConnectedUsers);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lstlogs);
             this.Controls.Add(this.cmdStop);
@@ -119,7 +135,9 @@
         private System.Windows.Forms.Button cmdStop;
         private System.Windows.Forms.ListBox lstlogs;
         private System.Windows.Forms.Button cmdClose;
-        private System.Windows.Forms.ListBox lstConnectedUsers;
+        private System.Windows.Forms.ListView lsvConnectedUsers;
+        private System.Windows.Forms.ColumnHeader UserColumn;
+        private System.Windows.Forms.ColumnHeader IpColumn;
     }
 }
 

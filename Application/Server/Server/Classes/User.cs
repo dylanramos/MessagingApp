@@ -47,11 +47,5 @@ namespace Server.Classes
             get;
             set;
         }
-
-        public Socket Socket
-        {
-            get;
-            set;
-        }
     }
 }

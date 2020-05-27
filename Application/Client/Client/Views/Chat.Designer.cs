@@ -36,7 +36,9 @@
             this.cmdClose = new System.Windows.Forms.Button();
             this.rtbMessage = new System.Windows.Forms.RichTextBox();
             this.ptbSend = new System.Windows.Forms.PictureBox();
-            this.flpChat = new System.Windows.Forms.FlowLayoutPanel();
+            this.pnlChat = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.pnlOnlineContacts.SuspendLayout();
             this.pnlOfflineContacts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ptbSend)).BeginInit();
@@ -122,13 +124,29 @@
             this.ptbSend.MouseLeave += new System.EventHandler(this.ptbSend_MouseLeave);
             this.ptbSend.MouseHover += new System.EventHandler(this.ptbSend_MouseHover);
             // 
-            // flpChat
+            // pnlChat
             // 
-            this.flpChat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.flpChat.Location = new System.Drawing.Point(243, 41);
-            this.flpChat.Name = "flpChat";
-            this.flpChat.Size = new System.Drawing.Size(431, 358);
-            this.flpChat.TabIndex = 6;
+            this.pnlChat.AutoScroll = true;
+            this.pnlChat.Location = new System.Drawing.Point(243, 38);
+            this.pnlChat.Name = "pnlChat";
+            this.pnlChat.Size = new System.Drawing.Size(431, 361);
+            this.pnlChat.TabIndex = 6;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Black;
+            this.panel2.Location = new System.Drawing.Point(236, 38);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1, 361);
+            this.panel2.TabIndex = 8;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.Black;
+            this.panel3.Location = new System.Drawing.Point(680, 38);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1, 361);
+            this.panel3.TabIndex = 9;
             // 
             // frmChat
             // 
@@ -136,7 +154,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(739, 479);
-            this.Controls.Add(this.flpChat);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.pnlChat);
             this.Controls.Add(this.ptbSend);
             this.Controls.Add(this.rtbMessage);
             this.Controls.Add(this.cmdClose);
@@ -166,6 +186,8 @@
         private System.Windows.Forms.Button cmdClose;
         private System.Windows.Forms.RichTextBox rtbMessage;
         private System.Windows.Forms.PictureBox ptbSend;
-        private System.Windows.Forms.FlowLayoutPanel flpChat;
+        private System.Windows.Forms.Panel pnlChat;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
     }
 }
