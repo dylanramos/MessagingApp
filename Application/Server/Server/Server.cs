@@ -18,7 +18,7 @@ namespace Server
         private List<User> _Users;
 
         private Socket _serverSocket, _clientSocket;
-        private byte[] _buffer;
+        private byte[] _buffer; // To send and receive data
 
         public frmServer()
         {
@@ -36,13 +36,13 @@ namespace Server
         private void cmdStart_Click(object sender, EventArgs e)
         {
             cmdStart.Enabled = false;
-            cmdStop.Enabled = true;     
+            cmdStop.Enabled = true;
 
             _Users = new List<User>();
             _databaseConnection = new DatabaseConnection();
 
             _Users = _databaseConnection.GetUsers();
-            
+
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "Le serveur a bien été démarré.";
 
@@ -87,7 +87,7 @@ namespace Server
             try
             {
                 _serverSocket.Listen(0);
-                _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), null);            
+                _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), null);
             }
             catch (Exception exception)
             {
@@ -100,10 +100,11 @@ namespace Server
         /// </summary>
         /// <param name="asyncResult"></param>
         private void AcceptCallback(IAsyncResult asyncResult)
-        {        
+        {
             try
             {
-                _clientSocket = _serverSocket.EndAccept(asyncResult);        
+                // Ends the connection request
+                _clientSocket = _serverSocket.EndAccept(asyncResult);
 
                 _buffer = new byte[_clientSocket.ReceiveBufferSize];
                 _clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
@@ -120,6 +121,7 @@ namespace Server
         /// <param name="asyncResult"></param>
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
+            // Ends the data receiving
             _clientSocket.EndReceive(asyncResult);
 
             string request;
@@ -129,7 +131,7 @@ namespace Server
                 string data = Encoding.ASCII.GetString(_buffer);
                 string[] words = data.Split(';');
 
-                request = words[0];                            
+                request = words[0];
 
                 switch (request)
                 {
@@ -141,13 +143,13 @@ namespace Server
 
                     case "Logout":
 
-                        Logout(words[1]);                        
+                        Logout(words[1]);
 
                         break;
 
                     case "AccountCreation":
 
-                        AccountCreation(words[1], words[2]);             
+                        AccountCreation(words[1], words[2]);
 
                         break;
 
@@ -188,7 +190,7 @@ namespace Server
         {
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "L'utilisateur " + usernameToCheck + " s'est connecté";
-            
+
             User realUser = _databaseConnection.GetUserCredentials(usernameToCheck);
 
             if (realUser != null)
@@ -200,7 +202,7 @@ namespace Server
                     {
                         if (user.Username == realUser.Username)
                         {
-                            if(user.Online)
+                            if (user.Online)
                             {
                                 // Sends to the client that the credentials are wrong
                                 _buffer = Encoding.ASCII.GetBytes("UserConnected;");
@@ -236,7 +238,7 @@ namespace Server
 
                             break;
                         }
-                    }  
+                    }
                 }
                 else
                 {
@@ -260,7 +262,7 @@ namespace Server
         private void Logout(string userToDisconnect)
         {
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
-            string log = dateTime + "L'utilisateur " + userToDisconnect + " s'est déconnecté.";   
+            string log = dateTime + "L'utilisateur " + userToDisconnect + " s'est déconnecté.";
 
             foreach (User user in _Users)
             {
@@ -270,7 +272,7 @@ namespace Server
                     user.Online = false;
 
                     // Updates the connected users list
-                    if(lsvConnectedUsers.InvokeRequired)
+                    if (lsvConnectedUsers.InvokeRequired)
                     {
                         Invoke((MethodInvoker)delegate
                         {
@@ -316,7 +318,7 @@ namespace Server
         {
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "Le compte de " + username + " a bien été créé.";
-            
+
             bool userExists;
 
             userExists = _databaseConnection.CheckUserExists(username);
@@ -349,7 +351,7 @@ namespace Server
         /// <param name="senderUser"></param>
         private void GetContacts(string senderUser)
         {
-            string dataToSend = "Contacts;";      
+            string dataToSend = "Contacts;";
 
             // Sends the connected users username
             foreach (User user in _Users)
@@ -366,7 +368,7 @@ namespace Server
                 if (senderUser != user.Username && user.Online == false)
                 {
                     dataToSend += user.Username + "/Offline;";
-                }      
+                }
             }
 
             // Sends the data to the remote client
@@ -387,7 +389,7 @@ namespace Server
             _databaseConnection.SaveMessage(senderUser, receiverUser, message, date);
 
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
-            string log = dateTime + senderUser + "a envoyé un message à " + receiverUser + ".";
+            string log = dateTime + senderUser + " a envoyé un message à " + receiverUser + ".";
 
             AddLog(log);
         }
@@ -410,7 +412,7 @@ namespace Server
         private void cmdClose_Click(object sender, EventArgs e)
         {
             this.Close();
-        }     
+        }
 
         /// <summary>
         /// Adds the log to the other logs list
@@ -418,7 +420,7 @@ namespace Server
         /// <param name="log"></param>
         private void AddLog(string log)
         {
-            if(lstlogs.InvokeRequired)
+            if (lstlogs.InvokeRequired)
             {
                 // To do the operation from another thread
                 Invoke((MethodInvoker)delegate

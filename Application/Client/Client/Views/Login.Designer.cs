@@ -170,6 +170,7 @@
             // 
             // lblAccountCreation
             // 
+            this.lblAccountCreation.ActiveLinkColor = System.Drawing.Color.Black;
             this.lblAccountCreation.AutoSize = true;
             this.lblAccountCreation.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAccountCreation.LinkColor = System.Drawing.Color.Tan;

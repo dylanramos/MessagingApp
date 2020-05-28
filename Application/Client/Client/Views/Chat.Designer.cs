@@ -50,7 +50,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOnlineContacts.AutoScroll = true;
             this.pnlOnlineContacts.Controls.Add(this.lblOnline);
-            this.pnlOnlineContacts.Location = new System.Drawing.Point(0, 0);
+            this.pnlOnlineContacts.Location = new System.Drawing.Point(12, 0);
             this.pnlOnlineContacts.Name = "pnlOnlineContacts";
             this.pnlOnlineContacts.Size = new System.Drawing.Size(176, 232);
             this.pnlOnlineContacts.TabIndex = 0;
@@ -72,7 +72,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOfflineContacts.AutoScroll = true;
             this.pnlOfflineContacts.Controls.Add(this.lblOffline);
-            this.pnlOfflineContacts.Location = new System.Drawing.Point(0, 238);
+            this.pnlOfflineContacts.Location = new System.Drawing.Point(12, 238);
             this.pnlOfflineContacts.Name = "pnlOfflineContacts";
             this.pnlOfflineContacts.Size = new System.Drawing.Size(176, 241);
             this.pnlOfflineContacts.TabIndex = 1;

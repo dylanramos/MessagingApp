@@ -31,7 +31,7 @@ namespace Server.Database
             else
             {
                 this.Initiate();
-            }           
+            }
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Server.Database
 
             while (_reader.Read())
             {
-                if(_reader["username"].ToString() != "")
+                if (_reader["username"].ToString() != "")
                 {
                     exists = true;
                 }
@@ -211,14 +211,14 @@ namespace Server.Database
 
             while (_reader.Read())
             {
-                if(int.Parse(_reader["UserId"].ToString()) == senderUserId)
+                if (int.Parse(_reader["UserId"].ToString()) == senderUserId)
                 {
                     messages += _reader["MessageText"].ToString() + "/" + _reader["MessageDate"].ToString() + "/Sender;";
                 }
                 else
                 {
                     messages += _reader["MessageText"].ToString() + "/" + _reader["MessageDate"].ToString() + "/Receiver;";
-                }             
+                }
             }
 
             return messages;

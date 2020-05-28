@@ -20,7 +20,7 @@ namespace Client.Views
         }
 
         /// <summary>
-        /// When we hover the button with the mouse
+        /// When we hover the button with the mouse its style changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -32,7 +32,7 @@ namespace Client.Views
         }
 
         /// <summary>
-        /// When we leave the button with the mouse
+        /// When we leave the button with the mouse its style changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

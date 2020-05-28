@@ -1,17 +1,10 @@
 ﻿using Client.Forms;
 using Client.Views;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Client
@@ -21,15 +14,16 @@ namespace Client
         private const string SERVER_IP = "127.0.0.1";
         private const int SERVER_PORT = 3333;
 
-        private bool _formChanged = false;
+        private bool _formChanged = false; // To check if the form has been closed
 
-        private Socket _socket;
-        private byte[] _buffer = new byte[1024];
+        private Socket _socket; // Client socket
+        private byte[] _buffer; // To send and receive data
 
         public frmLogin()
         {
             InitializeComponent();
 
+            // Login button
             ButtonStyle loginButton = new ButtonStyle();
             loginButton.Location = new Point(242, 453);
             loginButton.Size = new Size(128, 44);
@@ -41,89 +35,130 @@ namespace Client
             this.AcceptButton = loginButton;
         }
 
-        private void lblAccountCreation_MouseHover(object sender, EventArgs e)
-        {
-            this.Cursor = Cursors.Hand;
-            lblAccountCreation.ForeColor = Color.Black; 
-        }
-
-        private void lblAccountCreation_MouseLeave(object sender, EventArgs e)
-        {
-            this.Cursor = Cursors.Default;
-            lblAccountCreation.ForeColor = Color.Tan;
-        }
-
+        /// <summary>
+        /// When we are writing, the label disappears
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtUsername_TextChanged(object sender, EventArgs e)
         {
             lblUsername.Text = "";
         }
 
+        /// <summary>
+        /// If the input is empty, the label appears
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtUsername_Leave(object sender, EventArgs e)
         {
-            if(String.IsNullOrEmpty(txtUsername.Text))
+            if (String.IsNullOrEmpty(txtUsername.Text))
             {
                 lblUsername.Text = "Nom d'utilisateur";
-            }   
+            }
         }
 
+        /// <summary>
+        /// When we are writing, the label disappears
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtPassword_TextChanged(object sender, EventArgs e)
         {
             lblPassword.Text = "";
         }
 
+        /// <summary>
+        /// If the input is empty, the label appears
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtPassword_Leave(object sender, EventArgs e)
         {
-            if(String.IsNullOrEmpty(txtPassword.Text))
+            if (String.IsNullOrEmpty(txtPassword.Text))
             {
                 lblPassword.Text = "Mot de passe";
-            }    
+            }
         }
 
-        private void lblAccountCreation_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Opens the account creation form and closes the login form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lblAccountCreation_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            _formChanged = true;
+
             this.Close();
             frmAccountCreation accountCreation = new frmAccountCreation();
             accountCreation.Show();
         }
 
+        /// <summary>
+        /// Starts the connection with the remote server
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LoginButtonClicked(object sender, EventArgs e)
         {
-            if(!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
+            if (!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
             {
                 try
                 {
                     _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
-
-                    _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
-                    _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
                 }
                 catch (Exception)
                 {
                     MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            } 
+            }
             else
             {
                 MessageBox.Show("Veuillez remplir tous les champs.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }  
+            }
         }
 
+        /// <summary>
+        /// Ends the connection request and starts sending the data to the remote server
+        /// </summary>
+        /// <param name="asyncResult"></param>
         private void ConnectCallback(IAsyncResult asyncResult)
         {
+            // Ends the connection request
             _socket.EndConnect(asyncResult);
+
+            // Data to send
+            _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+
+            // Starts sending the data to the remote server
+            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
 
+        /// <summary>
+        /// Ends the send request and starts receiving the server data
+        /// </summary>
+        /// <param name="asyncResult"></param>
         private void SendCallback(IAsyncResult asyncResult)
         {
+            // Ends the send request
             _socket.EndSend(asyncResult);
 
+            // Data to receive
             _buffer = new byte[_socket.ReceiveBufferSize];
-            _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);               
+
+            // Starts receiving the data
+            _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
         }
 
+        /// <summary>
+        /// Ends the data receiving and starts processing with the application
+        /// </summary>
+        /// <param name="asyncResult"></param>
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
+            // Ends the data receiving
             _socket.EndReceive(asyncResult);
 
             string data = Encoding.ASCII.GetString(_buffer);
@@ -140,7 +175,7 @@ namespace Client
                     if (this.InvokeRequired)
                     {
                         Invoke((MethodInvoker)delegate
-                        {        
+                        {
                             this.Close();
                             chat.Show();
                         });
@@ -149,13 +184,13 @@ namespace Client
                     {
                         this.Close();
                         chat.Show();
-                    } 
+                    }
 
                     break;
 
                 case "LoginNok":
 
-                    MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);    
+                    MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     break;
 
@@ -170,18 +205,14 @@ namespace Client
             _socket.Close();
         }
 
-        private void lblAccountCreation_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            _formChanged = true;
-
-            this.Close();
-            frmAccountCreation accountCreation = new frmAccountCreation();
-            accountCreation.Show();
-        }
-
+        /// <summary>
+        /// If the page is not changed the application stops
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmLogin_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(!_formChanged)
+            if (!_formChanged)
             {
                 Application.Exit();
             }
