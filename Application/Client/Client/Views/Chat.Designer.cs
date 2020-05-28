@@ -33,7 +33,6 @@
             this.lblOnline = new System.Windows.Forms.Label();
             this.pnlOfflineContacts = new System.Windows.Forms.Panel();
             this.lblOffline = new System.Windows.Forms.Label();
-            this.cmdClose = new System.Windows.Forms.Button();
             this.rtbMessage = new System.Windows.Forms.RichTextBox();
             this.ptbSend = new System.Windows.Forms.PictureBox();
             this.pnlChat = new System.Windows.Forms.Panel();
@@ -88,19 +87,6 @@
             this.lblOffline.TabIndex = 0;
             this.lblOffline.Text = "Hors-ligne";
             // 
-            // cmdClose
-            // 
-            this.cmdClose.BackColor = System.Drawing.Color.Firebrick;
-            this.cmdClose.FlatAppearance.BorderSize = 0;
-            this.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdClose.Location = new System.Drawing.Point(704, -1);
-            this.cmdClose.Name = "cmdClose";
-            this.cmdClose.Size = new System.Drawing.Size(36, 32);
-            this.cmdClose.TabIndex = 4;
-            this.cmdClose.Text = "X";
-            this.cmdClose.UseVisualStyleBackColor = false;
-            this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
-            // 
             // rtbMessage
             // 
             this.rtbMessage.Location = new System.Drawing.Point(243, 405);
@@ -127,15 +113,15 @@
             // pnlChat
             // 
             this.pnlChat.AutoScroll = true;
-            this.pnlChat.Location = new System.Drawing.Point(243, 38);
+            this.pnlChat.Location = new System.Drawing.Point(243, 19);
             this.pnlChat.Name = "pnlChat";
-            this.pnlChat.Size = new System.Drawing.Size(431, 361);
+            this.pnlChat.Size = new System.Drawing.Size(470, 361);
             this.pnlChat.TabIndex = 6;
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Black;
-            this.panel2.Location = new System.Drawing.Point(236, 38);
+            this.panel2.Location = new System.Drawing.Point(236, 19);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1, 361);
             this.panel2.TabIndex = 8;
@@ -143,7 +129,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Black;
-            this.panel3.Location = new System.Drawing.Point(680, 38);
+            this.panel3.Location = new System.Drawing.Point(680, 19);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 361);
             this.panel3.TabIndex = 9;
@@ -159,15 +145,17 @@
             this.Controls.Add(this.pnlChat);
             this.Controls.Add(this.ptbSend);
             this.Controls.Add(this.rtbMessage);
-            this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.pnlOfflineContacts);
             this.Controls.Add(this.pnlOnlineContacts);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(5);
+            this.MaximizeBox = false;
             this.Name = "frmChat";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Chat";
+            this.Text = "MessagingApp - Chat";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmChat_FormClosing);
             this.pnlOnlineContacts.ResumeLayout(false);
             this.pnlOnlineContacts.PerformLayout();
             this.pnlOfflineContacts.ResumeLayout(false);
@@ -183,7 +171,6 @@
         private System.Windows.Forms.Label lblOnline;
         private System.Windows.Forms.Panel pnlOfflineContacts;
         private System.Windows.Forms.Label lblOffline;
-        private System.Windows.Forms.Button cmdClose;
         private System.Windows.Forms.RichTextBox rtbMessage;
         private System.Windows.Forms.PictureBox ptbSend;
         private System.Windows.Forms.Panel pnlChat;

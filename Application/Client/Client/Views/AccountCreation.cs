@@ -18,7 +18,9 @@ namespace Client
     public partial class frmAccountCreation : Form
     {
         const string SERVER_IP = "127.0.0.1";
-        const int SERVER_PORT = 3333;       
+        const int SERVER_PORT = 3333;
+
+        private bool _formChanged = false;
 
         private Socket _serverSocket;
 
@@ -30,6 +32,7 @@ namespace Client
             createButton.Location = new Point(242, 483);
             createButton.Size = new Size(128, 44);
             createButton.Text = "Créer";
+            createButton.TabIndex = 3;
             createButton.Click += new EventHandler(this.CreateButtonClicked);
             this.Controls.Add(createButton);
 
@@ -37,11 +40,12 @@ namespace Client
             cancelButton.Location = new Point(50, 483);
             cancelButton.Size = new Size(128, 44);
             cancelButton.Text = "Annuler";
+            cancelButton.TabIndex = 4;
             cancelButton.Click += new EventHandler(this.CancelButtonClicked);
             this.Controls.Add(cancelButton);
         }
 
-        private void txtUsername_Enter(object sender, EventArgs e)
+        private void txtUsername_TextChanged(object sender, EventArgs e)
         {
             lblUsername.Text = "";
         }
@@ -54,7 +58,7 @@ namespace Client
             }
         }
 
-        private void txtPassword_Enter(object sender, EventArgs e)
+        private void txtPassword_TextChanged(object sender, EventArgs e)
         {
             lblPassword.Text = "";
         }
@@ -67,7 +71,7 @@ namespace Client
             }
         }
 
-        private void txtPasswordVerification_Enter(object sender, EventArgs e)
+        private void txtPasswordVerification_TextChanged(object sender, EventArgs e)
         {
             lblPasswordVerification.Text = "";
         }
@@ -76,14 +80,15 @@ namespace Client
         {
             if (String.IsNullOrEmpty(txtPasswordVerification.Text))
             {
-                lblPasswordVerification.Text = "Mot de passe";
+                lblPasswordVerification.Text = "Vérification du mot de passe";
             }
         }
 
         private void CancelButtonClicked(object sender, EventArgs e)
         {
-            this.Close();
+            _formChanged = true;
 
+            this.Close();
             frmLogin login = new frmLogin();
             login.Show();
         }
@@ -151,6 +156,8 @@ namespace Client
 
                     MessageBox.Show("Le compte a bien été créé.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    _formChanged = true;
+
                     Invoke((MethodInvoker)delegate
                     {
                         this.Close();
@@ -171,9 +178,12 @@ namespace Client
             _serverSocket.Close();
         }
 
-        private void cmdClose_Click(object sender, EventArgs e)
+        private void frmAccountCreation_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Application.Exit();
+            if (!_formChanged)
+            {
+                Application.Exit();
+            }
         }
     }
 }

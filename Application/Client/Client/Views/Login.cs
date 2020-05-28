@@ -18,11 +18,13 @@ namespace Client
 {
     public partial class frmLogin : Form
     {
-        const string SERVER_IP = "127.0.0.1";
-        const int SERVER_PORT = 3333;       
+        private const string SERVER_IP = "127.0.0.1";
+        private const int SERVER_PORT = 3333;
+
+        private bool _formChanged = false;
 
         private Socket _socket;
-        private byte[] _buffer;
+        private byte[] _buffer = new byte[1024];
 
         public frmLogin()
         {
@@ -32,8 +34,11 @@ namespace Client
             loginButton.Location = new Point(242, 453);
             loginButton.Size = new Size(128, 44);
             loginButton.Text = "Se connecter";
+            loginButton.TabIndex = 2;
             loginButton.Click += new EventHandler(this.LoginButtonClicked);
-            this.Controls.Add(loginButton);     
+
+            this.Controls.Add(loginButton);
+            this.AcceptButton = loginButton;
         }
 
         private void lblAccountCreation_MouseHover(object sender, EventArgs e)
@@ -46,9 +51,9 @@ namespace Client
         {
             this.Cursor = Cursors.Default;
             lblAccountCreation.ForeColor = Color.Tan;
-        }      
+        }
 
-        private void txtUsername_Enter(object sender, EventArgs e)
+        private void txtUsername_TextChanged(object sender, EventArgs e)
         {
             lblUsername.Text = "";
         }
@@ -61,7 +66,7 @@ namespace Client
             }   
         }
 
-        private void txtPassword_Enter(object sender, EventArgs e)
+        private void txtPassword_TextChanged(object sender, EventArgs e)
         {
             lblPassword.Text = "";
         }
@@ -85,8 +90,6 @@ namespace Client
         {
             if(!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
             {
-                _buffer = new byte[1024];
-
                 try
                 {
                     _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -95,9 +98,9 @@ namespace Client
                     _buffer = Encoding.ASCII.GetBytes("Login;" + txtUsername.Text + ";" + txtPassword.Text + ";");
                     _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);         
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
-                    MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             } 
             else
@@ -108,14 +111,7 @@ namespace Client
 
         private void ConnectCallback(IAsyncResult asyncResult)
         {
-            try
-            {
-                _socket.EndConnect(asyncResult);
-            }
-            catch(Exception exception)
-            {
-                MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _socket.EndConnect(asyncResult);
         }
 
         private void SendCallback(IAsyncResult asyncResult)
@@ -138,12 +134,22 @@ namespace Client
             {
                 case "LoginOk":
 
-                    Invoke((MethodInvoker)delegate
+                    _formChanged = true;
+                    frmChat chat = new frmChat(txtUsername.Text);
+
+                    if (this.InvokeRequired)
                     {
-                        frmChat chat = new frmChat(txtUsername.Text);
+                        Invoke((MethodInvoker)delegate
+                        {        
+                            this.Close();
+                            chat.Show();
+                        });
+                    }
+                    else
+                    {
                         this.Close();
                         chat.Show();
-                    });
+                    } 
 
                     break;
 
@@ -152,15 +158,33 @@ namespace Client
                     MessageBox.Show("Les identifiants sont incorrects.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);    
 
                     break;
+
+                case "UserConnected":
+
+                    MessageBox.Show("Cet utlisateur est déjà connecté.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    break;
             }
 
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }
 
-        private void cmdClose_Click(object sender, EventArgs e)
-        {  
-            Application.Exit();
+        private void lblAccountCreation_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _formChanged = true;
+
+            this.Close();
+            frmAccountCreation accountCreation = new frmAccountCreation();
+            accountCreation.Show();
+        }
+
+        private void frmLogin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(!_formChanged)
+            {
+                Application.Exit();
+            }
         }
     }
 }

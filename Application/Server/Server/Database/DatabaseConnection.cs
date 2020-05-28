@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using Server.Classes;
@@ -15,12 +11,12 @@ namespace Server.Database
     class DatabaseConnection
     {
         // Connection to the database
-        private SQLiteConnection dbConnection;
-        private SQLiteCommand command;
-        private SQLiteDataReader reader;
+        private SQLiteConnection _dbConnection;
+        private SQLiteCommand _command;
+        private SQLiteDataReader _reader;
 
         /// <summary>
-        /// DataBaseConnection constructor
+        /// Database connection constructor
         /// </summary>
         public DatabaseConnection()
         {
@@ -43,20 +39,23 @@ namespace Server.Database
         /// </summary>
         private void Initiate()
         {
-            dbConnection = new SQLiteConnection("Data Source=MessagingApp.sqlite;Version=3;");
-            dbConnection.Open();
+            _dbConnection = new SQLiteConnection("Data Source=MessagingApp.sqlite;Version=3;");
+            _dbConnection.Open();
         }
 
+        /// <summary>
+        /// Creates the users table and the messages table
+        /// </summary>
         private void CreateTables()
         {
-            command = new SQLiteCommand(dbConnection);
+            _command = new SQLiteCommand(_dbConnection);
 
-            command.CommandText = "CREATE TABLE Users (" +
+            _command.CommandText = "CREATE TABLE Users (" +
                 "UserId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "UserName VARCHAR(45), " +
                 "UserPassword VARCHAR(100));";
 
-            command.CommandText += "CREATE TABLE Messages (" +
+            _command.CommandText += "CREATE TABLE Messages (" +
                 "MessageId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "MessageText TEXT(250), " +
                 "MessageDate VARCHAR(20), " +
@@ -64,7 +63,7 @@ namespace Server.Database
                 "UserId INT," +
                 "CONSTRAINT FK_UserId FOREIGN KEY(UserId) REFERENCES Users(UserId));";
 
-            command.ExecuteNonQuery();
+            _command.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -74,8 +73,8 @@ namespace Server.Database
         /// <returns></returns>
         private SQLiteDataReader ExecuteQuery(string sqlRequest)
         {
-            command = new SQLiteCommand(sqlRequest, dbConnection);
-            return command.ExecuteReader();
+            _command = new SQLiteCommand(sqlRequest, _dbConnection);
+            return _command.ExecuteReader();
         }
 
         /// <summary>
@@ -87,15 +86,20 @@ namespace Server.Database
             ExecuteQuery("INSERT INTO Users(UserName, UserPassword) VALUES('" + username + "', '" + password + "')");
         }
 
+        /// <summary>
+        /// Checks if the user already exists
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public bool CheckUserExists(string username)
         {
             bool exists = false;
 
-            reader = ExecuteQuery("SELECT UserName AS username FROM Users WHERE UserName = '" + username + "'");
+            _reader = ExecuteQuery("SELECT UserName AS username FROM Users WHERE UserName = '" + username + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                if(reader["username"].ToString() != "")
+                if(_reader["username"].ToString() != "")
                 {
                     exists = true;
                 }
@@ -104,30 +108,39 @@ namespace Server.Database
             return exists;
         }
 
+        /// <summary>
+        /// Gets the user credentials for the login
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public User GetUserCredentials(string username)
         {
             User verifiedUser = null;
-            reader = ExecuteQuery("SELECT UserName, UserPassword FROM Users WHERE UserName = '" + username + "'");
+            _reader = ExecuteQuery("SELECT UserName, UserPassword FROM Users WHERE UserName = '" + username + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                verifiedUser = new User(reader["UserName"].ToString(), reader["UserPassword"].ToString(), false);
+                verifiedUser = new User(_reader["UserName"].ToString(), _reader["UserPassword"].ToString(), false);
             }
 
             return verifiedUser;
         }
 
+        /// <summary>
+        /// Gets all the usernames
+        /// </summary>
+        /// <returns></returns>
         public List<User> GetUsers()
         {
             List<User> users = new List<User>();
 
-            reader = ExecuteQuery("SELECT UserName FROM Users");
+            _reader = ExecuteQuery("SELECT UserName FROM Users");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                if (reader["UserName"].ToString() != "")
+                if (_reader["UserName"].ToString() != "")
                 {
-                    User user = new User(reader["UserName"].ToString(), "", false);
+                    User user = new User(_reader["UserName"].ToString(), "", false);
                     users.Add(user);
                 }
             }
@@ -135,29 +148,42 @@ namespace Server.Database
             return users;
         }
 
+        /// <summary>
+        /// Saves the sent message
+        /// </summary>
+        /// <param name="senderUser"></param>
+        /// <param name="receiverUser"></param>
+        /// <param name="message"></param>
+        /// <param name="date"></param>
         public void SaveMessage(string senderUser, string receiverUser, string message, string date)
         {
             int senderUserId = 0, receiverUserId = 0;
 
             // Gets the sender user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+            _reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                senderUserId = int.Parse(reader["UserId"].ToString());
+                senderUserId = int.Parse(_reader["UserId"].ToString());
             }
 
             // Gets the receiver user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
+            _reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                receiverUserId = int.Parse(reader["UserId"].ToString());
+                receiverUserId = int.Parse(_reader["UserId"].ToString());
             }
 
             ExecuteQuery("INSERT INTO Messages(MessageText, MessageDate, ReceiverUserId, UserId) VALUES('" + message + "', '" + date + "', " + receiverUserId + ", " + senderUserId + ")");
         }
 
+        /// <summary>
+        /// Gets all the messages from two users
+        /// </summary>
+        /// <param name="senderUser"></param>
+        /// <param name="receiverUser"></param>
+        /// <returns></returns>
         public string GetMessages(string senderUser, string receiverUser)
         {
             string messages = "";
@@ -165,32 +191,33 @@ namespace Server.Database
             int senderUserId = 0, receiverUserId = 0;
 
             // Gets the sender user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
+            _reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + senderUser + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                senderUserId = int.Parse(reader["UserId"].ToString());
+                senderUserId = int.Parse(_reader["UserId"].ToString());
             }
 
             // Gets the receiver user id
-            reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
+            _reader = ExecuteQuery("SELECT UserId FROM Users WHERE UserName = '" + receiverUser + "'");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                receiverUserId = int.Parse(reader["UserId"].ToString());
+                receiverUserId = int.Parse(_reader["UserId"].ToString());
             }
 
-            reader = ExecuteQuery("SELECT UserId, MessageText, MessageDate FROM Messages WHERE UserId IN (" + senderUserId + ", " + receiverUserId + ") AND ReceiverUserId IN (" + senderUserId + ", " + receiverUserId + ")");
+            // Gets the messages
+            _reader = ExecuteQuery("SELECT UserId, MessageText, MessageDate FROM Messages WHERE UserId IN (" + senderUserId + ", " + receiverUserId + ") AND ReceiverUserId IN (" + senderUserId + ", " + receiverUserId + ")");
 
-            while (reader.Read())
+            while (_reader.Read())
             {
-                if(int.Parse(reader["UserId"].ToString()) == senderUserId)
+                if(int.Parse(_reader["UserId"].ToString()) == senderUserId)
                 {
-                    messages += reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString() + "/Sender;";
+                    messages += _reader["MessageText"].ToString() + "/" + _reader["MessageDate"].ToString() + "/Sender;";
                 }
                 else
                 {
-                    messages += reader["MessageText"].ToString() + "/" + reader["MessageDate"].ToString() + "/Receiver;";
+                    messages += _reader["MessageText"].ToString() + "/" + _reader["MessageDate"].ToString() + "/Receiver;";
                 }             
             }
 

@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmServer));
             this.cmdStart = new System.Windows.Forms.Button();
             this.cmdStop = new System.Windows.Forms.Button();
             this.lstlogs = new System.Windows.Forms.ListBox();
-            this.cmdClose = new System.Windows.Forms.Button();
             this.lsvConnectedUsers = new System.Windows.Forms.ListView();
             this.UserColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.IpColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -71,20 +71,6 @@
             this.lstlogs.Size = new System.Drawing.Size(743, 277);
             this.lstlogs.TabIndex = 2;
             // 
-            // cmdClose
-            // 
-            this.cmdClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdClose.BackColor = System.Drawing.Color.Firebrick;
-            this.cmdClose.FlatAppearance.BorderSize = 0;
-            this.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdClose.Location = new System.Drawing.Point(1177, -1);
-            this.cmdClose.Name = "cmdClose";
-            this.cmdClose.Size = new System.Drawing.Size(36, 32);
-            this.cmdClose.TabIndex = 3;
-            this.cmdClose.Text = "X";
-            this.cmdClose.UseVisualStyleBackColor = false;
-            this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
-            // 
             // lsvConnectedUsers
             // 
             this.lsvConnectedUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -115,16 +101,17 @@
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(1210, 404);
             this.Controls.Add(this.lsvConnectedUsers);
-            this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lstlogs);
             this.Controls.Add(this.cmdStop);
             this.Controls.Add(this.cmdStart);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(5);
+            this.MaximizeBox = false;
             this.Name = "frmServer";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "frmServer";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "MessagingApp - Server";
             this.ResumeLayout(false);
 
         }
@@ -134,7 +121,6 @@
         private System.Windows.Forms.Button cmdStart;
         private System.Windows.Forms.Button cmdStop;
         private System.Windows.Forms.ListBox lstlogs;
-        private System.Windows.Forms.Button cmdClose;
         private System.Windows.Forms.ListView lsvConnectedUsers;
         private System.Windows.Forms.ColumnHeader UserColumn;
         private System.Windows.Forms.ColumnHeader IpColumn;

@@ -186,7 +186,17 @@ namespace Client.Forms
 
                     string selectedUser = words[1];
 
-                    pnlChat.Controls.Clear();
+                    if (pnlChat.InvokeRequired)
+                    {
+                        Invoke((MethodInvoker)delegate
+                        {
+                            pnlChat.Controls.Clear();
+                        });
+                    }
+                    else
+                    {
+                        pnlChat.Controls.Clear();
+                    }
 
                     // If the contact is selected we show the message
                     if (_selectedUser == selectedUser)
@@ -229,21 +239,49 @@ namespace Client.Forms
 
                             if (message[2] == "Sender")
                             {
-                                Invoke((MethodInvoker)delegate
+                                if(pnlChat.InvokeRequired)
+                                {
+                                    Invoke((MethodInvoker)delegate
+                                    {
+                                        fromLabel.Text = "Moi";
+
+                                        fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
+                                        yPosition += messageLabel.Height;
+                                        messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
+                                        yPosition += dateLabel.Height;
+                                        dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
+                                        yPosition += fromLabel.Height + 10;
+                                    });
+                                }
+                                else
                                 {
                                     fromLabel.Text = "Moi";
 
-                                    fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width, yPosition);
+                                    fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
                                     yPosition += messageLabel.Height;
-                                    messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width, yPosition);
+                                    messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
                                     yPosition += dateLabel.Height;
-                                    dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width, yPosition);
+                                    dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
                                     yPosition += fromLabel.Height + 10;
-                                });    
+                                }
                             }
                             else
                             {
-                                Invoke((MethodInvoker)delegate
+                                if(pnlChat.InvokeRequired)
+                                {
+                                    Invoke((MethodInvoker)delegate
+                                    {
+                                        fromLabel.Text = selectedUser;
+
+                                        fromLabel.Location = new Point(0, yPosition);
+                                        yPosition += messageLabel.Height;
+                                        messageLabel.Location = new Point(0, yPosition);
+                                        yPosition += dateLabel.Height;
+                                        dateLabel.Location = new Point(0, yPosition);
+                                        yPosition += fromLabel.Height + 10;
+                                    });
+                                }
+                                else
                                 {
                                     fromLabel.Text = selectedUser;
 
@@ -253,8 +291,23 @@ namespace Client.Forms
                                     yPosition += dateLabel.Height;
                                     dateLabel.Location = new Point(0, yPosition);
                                     yPosition += fromLabel.Height + 10;
-                                });
+                                }
                             }     
+                        }
+
+                        // To show the latest messages (puts the scrollbar down)
+                        if(pnlChat.InvokeRequired)
+                        {
+                            Invoke((MethodInvoker)delegate
+                            {
+                                Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
+                                pnlChat.ScrollControlIntoView(control);
+                            });
+                        }
+                        else
+                        {
+                            Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
+                            pnlChat.ScrollControlIntoView(control);
                         }
                     }
 
@@ -265,6 +318,11 @@ namespace Client.Forms
             _socket.Close();
         }
 
+        /// <summary>
+        /// Shows all the contacts
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ContactSelected(object sender, EventArgs e)
         {
             try
@@ -280,7 +338,18 @@ namespace Client.Forms
             rtbMessage.Visible = true;
             ptbSend.Visible = true;
 
-            pnlChat.Controls.Clear();
+            if(pnlChat.InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate
+                {
+                   pnlChat.Controls.Clear();
+                });
+            }
+            else
+            {
+                pnlChat.Controls.Clear();
+            }
+            
 
             Button clickedButton = sender as Button;
             _selectedUser = clickedButton.Text;
@@ -289,16 +358,21 @@ namespace Client.Forms
             _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
 
-        private void cmdClose_Click(object sender, EventArgs e)
+        /// <summary>
+        /// When the form is closed, we send to the server that the user has to be disconnected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void frmChat_FormClosing(object sender, FormClosingEventArgs e)
         {
             StartConnection();
-            
+
             try
             {
                 _buffer = Encoding.ASCII.GetBytes("Logout;" + _connectedUser + ";");
                 _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
             }
-            catch(Exception exception)
+            catch (Exception)
             {
                 Application.Exit();
             }

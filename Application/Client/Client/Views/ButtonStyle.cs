@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Client.Views
@@ -12,17 +8,22 @@ namespace Client.Views
     {
         public ButtonStyle()
         {
-            // Styles
+            // Properties
             this.BackColor = Color.Tan;
             this.FlatStyle = FlatStyle.Flat;
             this.Font = new Font("Microsoft YaHei", 12F, FontStyle.Regular);
-            this.TabStop = false;
+            this.TabStop = true;
 
             // Events
             this.MouseLeave += new EventHandler(this.MouseLeaved);
             this.MouseHover += new EventHandler(this.MouseHovered);
         }
 
+        /// <summary>
+        /// When we hover the button with the mouse
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MouseHovered(object sender, EventArgs e)
         {
             this.Cursor = Cursors.Hand;
@@ -30,6 +31,11 @@ namespace Client.Views
             this.ForeColor = Color.Tan;
         }
 
+        /// <summary>
+        /// When we leave the button with the mouse
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MouseLeaved(object sender, EventArgs e)
         {
             this.Cursor = Cursors.Default;

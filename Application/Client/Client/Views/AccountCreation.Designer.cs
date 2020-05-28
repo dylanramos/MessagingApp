@@ -51,7 +51,6 @@
             this.lblUsername = new System.Windows.Forms.Label();
             this.lblPassword = new System.Windows.Forms.Label();
             this.lblPasswordVerification = new System.Windows.Forms.Label();
-            this.cmdClose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ptbTitle)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbUserName)).BeginInit();
             this.panel2.SuspendLayout();
@@ -103,8 +102,8 @@
             this.txtUsername.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(278, 22);
-            this.txtUsername.TabIndex = 1;
-            this.txtUsername.Enter += new System.EventHandler(this.txtUsername_Enter);
+            this.txtUsername.TabIndex = 0;
+            this.txtUsername.TextChanged += new System.EventHandler(this.txtUsername_TextChanged);
             this.txtUsername.Leave += new System.EventHandler(this.txtUsername_Leave);
             // 
             // panel1
@@ -208,13 +207,13 @@
             this.txtPassword.BackColor = System.Drawing.Color.IndianRed;
             this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtPassword.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPassword.Location = new System.Drawing.Point(92, 334);
+            this.txtPassword.Location = new System.Drawing.Point(92, 333);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(278, 22);
-            this.txtPassword.TabIndex = 2;
+            this.txtPassword.TabIndex = 1;
             this.txtPassword.UseSystemPasswordChar = true;
-            this.txtPassword.Enter += new System.EventHandler(this.txtPassword_Enter);
+            this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             this.txtPassword.Leave += new System.EventHandler(this.txtPassword_Leave);
             // 
             // ptbPassword
@@ -232,19 +231,19 @@
             this.txtPasswordVerification.BackColor = System.Drawing.Color.IndianRed;
             this.txtPasswordVerification.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtPasswordVerification.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPasswordVerification.Location = new System.Drawing.Point(90, 394);
+            this.txtPasswordVerification.Location = new System.Drawing.Point(92, 397);
             this.txtPasswordVerification.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.txtPasswordVerification.Name = "txtPasswordVerification";
             this.txtPasswordVerification.Size = new System.Drawing.Size(278, 22);
-            this.txtPasswordVerification.TabIndex = 3;
+            this.txtPasswordVerification.TabIndex = 2;
             this.txtPasswordVerification.UseSystemPasswordChar = true;
-            this.txtPasswordVerification.Enter += new System.EventHandler(this.txtPasswordVerification_Enter);
+            this.txtPasswordVerification.TextChanged += new System.EventHandler(this.txtPasswordVerification_TextChanged);
             this.txtPasswordVerification.Leave += new System.EventHandler(this.txtPasswordVerification_Leave);
             // 
             // pictureBox3
             // 
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(50, 380);
+            this.pictureBox3.Location = new System.Drawing.Point(50, 384);
             this.pictureBox3.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(38, 39);
@@ -278,7 +277,7 @@
             this.lblUsername.AutoSize = true;
             this.lblUsername.Enabled = false;
             this.lblUsername.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblUsername.Location = new System.Drawing.Point(88, 242);
+            this.lblUsername.Location = new System.Drawing.Point(93, 243);
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(142, 21);
             this.lblUsername.TabIndex = 12;
@@ -289,7 +288,7 @@
             this.lblPassword.AutoSize = true;
             this.lblPassword.Enabled = false;
             this.lblPassword.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPassword.Location = new System.Drawing.Point(88, 334);
+            this.lblPassword.Location = new System.Drawing.Point(93, 334);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(113, 21);
             this.lblPassword.TabIndex = 13;
@@ -300,24 +299,11 @@
             this.lblPasswordVerification.AutoSize = true;
             this.lblPasswordVerification.Enabled = false;
             this.lblPasswordVerification.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPasswordVerification.Location = new System.Drawing.Point(88, 394);
+            this.lblPasswordVerification.Location = new System.Drawing.Point(93, 398);
             this.lblPasswordVerification.Name = "lblPasswordVerification";
             this.lblPasswordVerification.Size = new System.Drawing.Size(229, 21);
             this.lblPasswordVerification.TabIndex = 14;
             this.lblPasswordVerification.Text = "Vérification du mot de passe";
-            // 
-            // cmdClose
-            // 
-            this.cmdClose.BackColor = System.Drawing.Color.Firebrick;
-            this.cmdClose.FlatAppearance.BorderSize = 0;
-            this.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmdClose.Location = new System.Drawing.Point(384, -1);
-            this.cmdClose.Name = "cmdClose";
-            this.cmdClose.Size = new System.Drawing.Size(36, 32);
-            this.cmdClose.TabIndex = 0;
-            this.cmdClose.Text = "X";
-            this.cmdClose.UseVisualStyleBackColor = false;
-            this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
             // 
             // frmAccountCreation
             // 
@@ -325,7 +311,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
             this.ClientSize = new System.Drawing.Size(420, 579);
-            this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lblPasswordVerification);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.lblUsername);
@@ -342,11 +327,13 @@
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.ptbTitle);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "frmAccountCreation";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Form1";
+            this.Text = "MessagingApp - Account creation";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmAccountCreation_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.ptbTitle)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ptbUserName)).EndInit();
             this.panel2.ResumeLayout(false);
@@ -386,7 +373,6 @@
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.Label lblPassword;
         private System.Windows.Forms.Label lblPasswordVerification;
-        private System.Windows.Forms.Button cmdClose;
     }
 }
 
