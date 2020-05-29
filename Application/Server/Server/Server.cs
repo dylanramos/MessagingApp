@@ -11,11 +11,11 @@ namespace Server
 {
     public partial class frmServer : Form
     {
-        const int PORT_NUMBER = 3333; // Server port
+        private const int PORT_NUMBER = 3333; // Server port
 
         private DatabaseConnection _databaseConnection; // Database connection
 
-        private List<User> _Users;
+        private List<User> _users;
 
         private Socket _serverSocket, _clientSocket;
         private byte[] _buffer; // To send and receive data
@@ -38,10 +38,10 @@ namespace Server
             cmdStart.Enabled = false;
             cmdStop.Enabled = true;
 
-            _Users = new List<User>();
             _databaseConnection = new DatabaseConnection();
+            _users = new List<User>();
 
-            _Users = _databaseConnection.GetUsers();
+            _users = _databaseConnection.GetUsers();
 
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "Le serveur a bien été démarré.";
@@ -76,7 +76,7 @@ namespace Server
             AddLog(log);
 
             lsvConnectedUsers.Items.Clear();
-            _Users.Clear();
+            _users.Clear();
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Server
                 if (passwordToCheck == realUser.Password)
                 {
                     // Sets the user online
-                    foreach (User user in _Users)
+                    foreach (User user in _users)
                     {
                         if (user.Username == realUser.Username)
                         {
@@ -264,7 +264,7 @@ namespace Server
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "L'utilisateur " + userToDisconnect + " s'est déconnecté.";
 
-            foreach (User user in _Users)
+            foreach (User user in _users)
             {
                 // Removes the disconnected user
                 if (user.Username == userToDisconnect)
@@ -335,7 +335,7 @@ namespace Server
 
                 // Adds the new user to the list
                 User newUser = new User(username, "", false);
-                _Users.Add(newUser);
+                _users.Add(newUser);
 
                 AddLog(log);
 
@@ -354,7 +354,7 @@ namespace Server
             string dataToSend = "Contacts;";
 
             // Sends the connected users username
-            foreach (User user in _Users)
+            foreach (User user in _users)
             {
                 if (senderUser != user.Username && user.Online == true)
                 {
@@ -363,7 +363,7 @@ namespace Server
             }
 
             // Sends the disconnected users username
-            foreach (User user in _Users)
+            foreach (User user in _users)
             {
                 if (senderUser != user.Username && user.Online == false)
                 {
@@ -401,7 +401,7 @@ namespace Server
         /// <param name="receiverUser"></param>
         private void GetAllMessages(string senderUser, string receiverUser)
         {
-            string dataToSend = "Messages;" + receiverUser + ";";
+            string dataToSend = "Messages;";
             dataToSend += _databaseConnection.GetMessages(senderUser, receiverUser);
 
             // Sends the data to the remote client

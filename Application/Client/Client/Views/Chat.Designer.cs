@@ -38,28 +38,28 @@
             this.pnlChat = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.ptbReload = new System.Windows.Forms.PictureBox();
             this.pnlOnlineContacts.SuspendLayout();
             this.pnlOfflineContacts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ptbSend)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ptbReload)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlOnlineContacts
             // 
-            this.pnlOnlineContacts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOnlineContacts.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.pnlOnlineContacts.AutoScroll = true;
             this.pnlOnlineContacts.Controls.Add(this.lblOnline);
-            this.pnlOnlineContacts.Location = new System.Drawing.Point(12, 0);
+            this.pnlOnlineContacts.Location = new System.Drawing.Point(42, 0);
             this.pnlOnlineContacts.Name = "pnlOnlineContacts";
-            this.pnlOnlineContacts.Size = new System.Drawing.Size(176, 232);
+            this.pnlOnlineContacts.Size = new System.Drawing.Size(267, 232);
             this.pnlOnlineContacts.TabIndex = 0;
             // 
             // lblOnline
             // 
             this.lblOnline.AutoSize = true;
             this.lblOnline.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOnline.Location = new System.Drawing.Point(50, 9);
+            this.lblOnline.Location = new System.Drawing.Point(93, 19);
             this.lblOnline.Name = "lblOnline";
             this.lblOnline.Size = new System.Drawing.Size(74, 22);
             this.lblOnline.TabIndex = 0;
@@ -67,21 +67,19 @@
             // 
             // pnlOfflineContacts
             // 
-            this.pnlOfflineContacts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOfflineContacts.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.pnlOfflineContacts.AutoScroll = true;
             this.pnlOfflineContacts.Controls.Add(this.lblOffline);
-            this.pnlOfflineContacts.Location = new System.Drawing.Point(12, 238);
+            this.pnlOfflineContacts.Location = new System.Drawing.Point(42, 238);
             this.pnlOfflineContacts.Name = "pnlOfflineContacts";
-            this.pnlOfflineContacts.Size = new System.Drawing.Size(176, 241);
+            this.pnlOfflineContacts.Size = new System.Drawing.Size(267, 241);
             this.pnlOfflineContacts.TabIndex = 1;
             // 
             // lblOffline
             // 
             this.lblOffline.AutoSize = true;
             this.lblOffline.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOffline.Location = new System.Drawing.Point(41, 12);
+            this.lblOffline.Location = new System.Drawing.Point(84, 14);
             this.lblOffline.Name = "lblOffline";
             this.lblOffline.Size = new System.Drawing.Size(96, 22);
             this.lblOffline.TabIndex = 0;
@@ -89,7 +87,8 @@
             // 
             // rtbMessage
             // 
-            this.rtbMessage.Location = new System.Drawing.Point(243, 405);
+            this.rtbMessage.Location = new System.Drawing.Point(356, 405);
+            this.rtbMessage.MaxLength = 250;
             this.rtbMessage.Name = "rtbMessage";
             this.rtbMessage.Size = new System.Drawing.Size(374, 62);
             this.rtbMessage.TabIndex = 1;
@@ -100,7 +99,7 @@
             // 
             this.ptbSend.BackColor = System.Drawing.Color.IndianRed;
             this.ptbSend.Image = ((System.Drawing.Image)(resources.GetObject("ptbSend.Image")));
-            this.ptbSend.Location = new System.Drawing.Point(623, 412);
+            this.ptbSend.Location = new System.Drawing.Point(736, 412);
             this.ptbSend.Name = "ptbSend";
             this.ptbSend.Size = new System.Drawing.Size(51, 50);
             this.ptbSend.TabIndex = 5;
@@ -113,7 +112,7 @@
             // pnlChat
             // 
             this.pnlChat.AutoScroll = true;
-            this.pnlChat.Location = new System.Drawing.Point(243, 19);
+            this.pnlChat.Location = new System.Drawing.Point(356, 19);
             this.pnlChat.Name = "pnlChat";
             this.pnlChat.Size = new System.Drawing.Size(470, 361);
             this.pnlChat.TabIndex = 6;
@@ -121,7 +120,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Black;
-            this.panel2.Location = new System.Drawing.Point(236, 19);
+            this.panel2.Location = new System.Drawing.Point(349, 19);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1, 361);
             this.panel2.TabIndex = 8;
@@ -129,17 +128,30 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Black;
-            this.panel3.Location = new System.Drawing.Point(680, 19);
+            this.panel3.Location = new System.Drawing.Point(793, 19);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 361);
             this.panel3.TabIndex = 9;
+            // 
+            // ptbReload
+            // 
+            this.ptbReload.Image = ((System.Drawing.Image)(resources.GetObject("ptbReload.Image")));
+            this.ptbReload.Location = new System.Drawing.Point(832, 12);
+            this.ptbReload.Name = "ptbReload";
+            this.ptbReload.Size = new System.Drawing.Size(52, 48);
+            this.ptbReload.TabIndex = 0;
+            this.ptbReload.TabStop = false;
+            this.ptbReload.Visible = false;
+            this.ptbReload.Click += new System.EventHandler(this.ptbReload_Click);
+            this.ptbReload.MouseHover += new System.EventHandler(this.ptbReload_MouseHover);
             // 
             // frmChat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.IndianRed;
-            this.ClientSize = new System.Drawing.Size(739, 479);
+            this.ClientSize = new System.Drawing.Size(890, 479);
+            this.Controls.Add(this.ptbReload);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.pnlChat);
@@ -161,6 +173,7 @@
             this.pnlOfflineContacts.ResumeLayout(false);
             this.pnlOfflineContacts.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ptbSend)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ptbReload)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -176,5 +189,6 @@
         private System.Windows.Forms.Panel pnlChat;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.PictureBox ptbReload;
     }
 }

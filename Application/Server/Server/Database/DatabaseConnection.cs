@@ -52,8 +52,8 @@ namespace Server.Database
 
             _command.CommandText = "CREATE TABLE Users (" +
                 "UserId INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "UserName VARCHAR(45), " +
-                "UserPassword VARCHAR(100));";
+                "UserName VARCHAR(25), " +
+                "UserPassword VARCHAR(25));";
 
             _command.CommandText += "CREATE TABLE Messages (" +
                 "MessageId INTEGER PRIMARY KEY AUTOINCREMENT, " +

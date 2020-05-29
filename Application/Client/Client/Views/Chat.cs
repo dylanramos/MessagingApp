@@ -28,9 +28,20 @@ namespace Client.Forms
             InitializeComponent();
 
             _connectedUser = username;
+     
+            LoadContacts();  
+        }
 
-            StartConnection();
-            LoadContacts();
+        /// <summary>
+        /// To spilt the message if it is too long
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        static IEnumerable<string> SplitMessage(string message)
+        {
+            int chunkSize = 30;
+
+            return Enumerable.Range(0, message.Length / chunkSize).Select(i => message.Substring(i * chunkSize, chunkSize));
         }
 
         /// <summary>
@@ -54,21 +65,101 @@ namespace Client.Forms
         }
 
         /// <summary>
+        /// When we hover the button with the mouse its style changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ptbReload_MouseHover(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.Hand;
+        }
+
+        /// <summary>
+        /// Reloads the data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ptbReload_Click(object sender, EventArgs e)
+        {     
+            LoadMessages(); // Reloads the messages
+        }
+
+        /// <summary>
         /// Starts sending the data to the remote server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ptbSend_Click(object sender, EventArgs e)
         {
-            StartConnection();
+            char[] deniedChars = { ';', '/', '"', '(', ')', '=', ',', '\'', '\\' };
 
-            string date = DateTime.Now.ToString("dd MMMM yyyy H:mm");
+            if (!String.IsNullOrEmpty(rtbMessage.Text))
+            {
+                if (rtbMessage.Text.IndexOfAny(deniedChars) == -1)
+                {
+                    StartConnection();
 
-            _buffer = Encoding.ASCII.GetBytes("Message;" + _connectedUser + ";" + _selectedUser + ";" + rtbMessage.Text + ";" + date + ";");
-            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                    string date = DateTime.Now.ToString("dd MMMM yyyy H:mm");
+
+                    _buffer = Encoding.ASCII.GetBytes("Message;" + _connectedUser + ";" + _selectedUser + ";" + rtbMessage.Text + ";" + date + ";");
+
+                    try
+                    {
+                        _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Les caractères ; / \" ( ) = , ' \\ sont interdits.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
 
             rtbMessage.Clear();
         }
+
+        /// <summary>
+        /// Starts sending the data to the remote server to get the contacts
+        /// </summary>
+        private void LoadContacts()
+        {
+            StartConnection();
+
+            _buffer = Encoding.ASCII.GetBytes("Contacts;" + _connectedUser + ";");
+
+            try
+            {
+                _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+        }
+
+        /// <summary>
+        /// Starts sending the data to the remote server to get the messages
+        /// </summary>
+        private void LoadMessages()
+        {
+            StartConnection();
+
+            _buffer = Encoding.ASCII.GetBytes("Messages;" + _connectedUser + ";" + _selectedUser + ";");
+
+            try
+            {
+                _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
+        }    
 
         /// <summary>
         /// Starts the connection with the remote server
@@ -83,16 +174,8 @@ namespace Client.Forms
             catch (Exception)
             {
                 MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
             }
-        }
-
-        /// <summary>
-        /// Starts sending the data to the remote server
-        /// </summary>
-        private void LoadContacts()
-        {
-            _buffer = Encoding.ASCII.GetBytes("Contacts;" + _connectedUser + ";");
-            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
         }
 
         /// <summary>
@@ -101,8 +184,16 @@ namespace Client.Forms
         /// <param name="asyncResult"></param>
         private void ConnectCallback(IAsyncResult asyncResult)
         {
-            // Ends the connection request
-            _socket.EndConnect(asyncResult);
+            try
+            {
+                // Ends the connection request
+                _socket.EndConnect(asyncResult);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -111,14 +202,22 @@ namespace Client.Forms
         /// <param name="asyncResult"></param>
         private void SendCallback(IAsyncResult asyncResult)
         {
-            // Ends the send request
-            _socket.EndSend(asyncResult);
+            try
+            {
+                // Ends the send request
+                _socket.EndSend(asyncResult);
 
-            // Data to receive
-            _buffer = new byte[_socket.ReceiveBufferSize];
+                // Data to receive
+                _buffer = new byte[_socket.ReceiveBufferSize];
 
-            // Starts receiving the data
-            _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                // Starts receiving the data
+                _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -127,8 +226,16 @@ namespace Client.Forms
         /// <param name="asyncResult"></param>
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
-            // Ends the data receiving
-            _socket.EndReceive(asyncResult);
+            try
+            {
+                // Ends the data receiving
+                _socket.EndReceive(asyncResult);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
 
             string data = Encoding.ASCII.GetString(_buffer);
             string[] words = data.Split(';');
@@ -144,7 +251,7 @@ namespace Client.Forms
 
                 case "Contacts":
 
-                    int x = 50;
+                    int x = 0;
                     int onlinePanelY = 50, offlinePanelY = 50;
 
                     for (int i = 1; i < words.Length - 1; i++)
@@ -158,38 +265,50 @@ namespace Client.Forms
 
                         if (users[1] == "Online")
                         {
-                            // Adds the button to the online panel
-                            button.Location = new Point(x, onlinePanelY);
+                            
 
                             if (pnlOnlineContacts.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
                                     pnlOnlineContacts.Controls.Add(button);
+
+                                    x = (pnlOnlineContacts.Width / 2) - (button.Width / 2);
+                                    // Adds the button to the online panel
+                                    button.Location = new Point(x, onlinePanelY);
                                 });
                             }
                             else
                             {
                                 pnlOnlineContacts.Controls.Add(button);
+                                x = (pnlOnlineContacts.Width / 2) - (button.Width / 2);
+                                // Adds the button to the online panel
+                                button.Location = new Point(x, onlinePanelY);
                             }
 
                             onlinePanelY += 50;
                         }
                         else
                         {
-                            // Adds the button to the offline panel
-                            button.Location = new Point(x, offlinePanelY);
+                            
 
                             if (pnlOfflineContacts.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
                                     pnlOfflineContacts.Controls.Add(button);
+
+                                    x = (pnlOfflineContacts.Width / 2) - (button.Width / 2);
+                                    // Adds the button to the offline panel
+                                    button.Location = new Point(x, offlinePanelY);
                                 });
                             }
                             else
                             {
                                 pnlOfflineContacts.Controls.Add(button);
+                                x = (pnlOfflineContacts.Width / 2) - (button.Width / 2);
+                                // Adds the button to the offline panel
+                                button.Location = new Point(x, offlinePanelY);
                             }
 
                             offlinePanelY += 50;
@@ -199,8 +318,6 @@ namespace Client.Forms
                     break;
 
                 case "Messages":
-
-                    string selectedUser = words[1];
 
                     if (pnlChat.InvokeRequired)
                     {
@@ -214,130 +331,145 @@ namespace Client.Forms
                         pnlChat.Controls.Clear();
                     }
 
-                    // If the contact is selected we show the message
-                    if (_selectedUser == selectedUser)
+                    int yPosition = 0;
+
+                    for (int i = 1; i < words.Length - 1; i++)
                     {
-                        int yPosition = 0;
+                        List<string> message = words[i].Split('/').ToList();
 
-                        for (int i = 2; i < words.Length - 1; i++)
+                        // From label
+                        Label fromLabel = new Label();
+                        fromLabel.AutoSize = true;
+                        fromLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold);
+
+                        // Message label
+                        Label messageLabel = new Label();
+                        messageLabel.AutoSize = true;
+                        messageLabel.ForeColor = Color.Tan;
+
+                        // If the message is too long we format it
+                        if(message[0].Length > 30)
                         {
-                            List<string> message = words[i].Split('/').ToList();
+                            string newMessage = "";
 
-                            // From label
-                            Label fromLabel = new Label();
-                            fromLabel.AutoSize = true;
-                            fromLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold);
+                            IEnumerable<string> spiltedMessage = SplitMessage(message[0]);
 
-                            // Message label
-                            Label messageLabel = new Label();
-                            messageLabel.AutoSize = true;
-                            messageLabel.ForeColor = Color.Tan;
-                            messageLabel.Text = message[0];
-
-                            // Date label
-                            Label dateLabel = new Label();
-                            dateLabel.AutoSize = true;
-                            dateLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Italic);
-                            dateLabel.Text = message[1];
-
-                            if (pnlChat.InvokeRequired)
+                            foreach (string s in spiltedMessage)
                             {
-                                Invoke((MethodInvoker)delegate
-                                {
-                                    pnlChat.Controls.Add(fromLabel);
-                                    pnlChat.Controls.Add(messageLabel);
-                                    pnlChat.Controls.Add(dateLabel);
-                                });
+                                newMessage += s + "-\n";
                             }
-                            else
+
+                            newMessage = newMessage.Remove(newMessage.Length - 2); // Deletes the last -
+                            messageLabel.Text = newMessage;
+                        }
+                        else
+                        {
+                            messageLabel.Text = message[0];
+                        }                   
+
+                        // Date label
+                        Label dateLabel = new Label();
+                        dateLabel.AutoSize = true;
+                        dateLabel.Font = new Font("Microsoft YaHei", 12F, FontStyle.Italic);
+                        dateLabel.Text = message[1];
+
+                        if (pnlChat.InvokeRequired)
+                        {
+                            Invoke((MethodInvoker)delegate
                             {
                                 pnlChat.Controls.Add(fromLabel);
                                 pnlChat.Controls.Add(messageLabel);
                                 pnlChat.Controls.Add(dateLabel);
-                            }
-
-                            if (message[2] == "Sender")
-                            {
-                                // The sender messages are on the right
-                                if (pnlChat.InvokeRequired)
-                                {
-                                    Invoke((MethodInvoker)delegate
-                                    {
-                                        fromLabel.Text = "Moi";
-
-                                        fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
-                                        yPosition += messageLabel.Height;
-                                        messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
-                                        yPosition += dateLabel.Height;
-                                        dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
-                                        yPosition += fromLabel.Height + 10;
-                                    });
-                                }
-                                else
-                                {
-
-                                    fromLabel.Text = "Moi";
-
-                                    fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
-                                    yPosition += messageLabel.Height;
-                                    messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
-                                    yPosition += dateLabel.Height;
-                                    dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
-                                    yPosition += fromLabel.Height + 10;
-                                }
-                            }
-                            else
-                            {
-                                // The receiver messages are on the left
-                                if (pnlChat.InvokeRequired)
-                                {
-                                    Invoke((MethodInvoker)delegate
-                                    {
-                                        fromLabel.Text = selectedUser;
-
-                                        fromLabel.Location = new Point(0, yPosition);
-                                        yPosition += messageLabel.Height;
-                                        messageLabel.Location = new Point(0, yPosition);
-                                        yPosition += dateLabel.Height;
-                                        dateLabel.Location = new Point(0, yPosition);
-                                        yPosition += fromLabel.Height + 10;
-                                    });
-                                }
-                                else
-                                {
-                                    fromLabel.Text = selectedUser;
-
-                                    fromLabel.Location = new Point(0, yPosition);
-                                    yPosition += messageLabel.Height;
-                                    messageLabel.Location = new Point(0, yPosition);
-                                    yPosition += dateLabel.Height;
-                                    dateLabel.Location = new Point(0, yPosition);
-                                    yPosition += fromLabel.Height + 10;
-                                }
-                            }
+                            });
+                        }
+                        else
+                        {
+                            pnlChat.Controls.Add(fromLabel);
+                            pnlChat.Controls.Add(messageLabel);
+                            pnlChat.Controls.Add(dateLabel);
                         }
 
-                        // If there are messages to show
-                        if (pnlChat.Controls.Count > 0)
+                        if (message[2] == "Sender")
                         {
-                            // To show the latest messages (puts the scrollbar down)
+                            // The sender messages are on the right
                             if (pnlChat.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
-                                    Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
-                                    pnlChat.ScrollControlIntoView(control);
+                                    fromLabel.Text = "Moi";
+
+                                    fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
+                                    yPosition += fromLabel.Height;
+                                    messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
+                                    yPosition += messageLabel.Height;
+                                    dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
+                                    yPosition += dateLabel.Height + 10;
                                 });
                             }
                             else
                             {
-                                Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
-                                pnlChat.ScrollControlIntoView(control);
+
+                                fromLabel.Text = "Moi";
+
+                                fromLabel.Location = new Point(pnlChat.Width - fromLabel.Width - 38, yPosition);
+                                yPosition += fromLabel.Height;
+                                messageLabel.Location = new Point(pnlChat.Width - messageLabel.Width - 38, yPosition);
+                                yPosition += messageLabel.Height;
+                                dateLabel.Location = new Point(pnlChat.Width - dateLabel.Width - 38, yPosition);
+                                yPosition += dateLabel.Height + 10;
+                            }
+                        }
+                        else
+                        {
+                            // The receiver messages are on the left
+                            if (pnlChat.InvokeRequired)
+                            {
+                                Invoke((MethodInvoker)delegate
+                                {
+                                    fromLabel.Text = _selectedUser;
+
+                                    fromLabel.Location = new Point(0, yPosition);
+                                    yPosition += fromLabel.Height;
+                                    messageLabel.Location = new Point(0, yPosition);
+                                    yPosition += messageLabel.Height;
+                                    dateLabel.Location = new Point(0, yPosition);
+                                    yPosition += dateLabel.Height + 10;
+                                });
+                            }
+                            else
+                            {
+                                fromLabel.Text = _selectedUser;
+
+                                fromLabel.Location = new Point(0, yPosition);
+                                yPosition += fromLabel.Height;
+                                messageLabel.Location = new Point(0, yPosition);
+                                yPosition += messageLabel.Height;
+                                dateLabel.Location = new Point(0, yPosition);
+                                yPosition += dateLabel.Height + 10;
                             }
                         }
                     }
 
-                    break;
+                    // If there are messages to show
+                    if (pnlChat.Controls.Count > 0)
+                    {
+                        // To show the latest messages (puts the scrollbar down)
+                        if (pnlChat.InvokeRequired)
+                        {
+                            Invoke((MethodInvoker)delegate
+                            {
+                                Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
+                                pnlChat.ScrollControlIntoView(control);
+                            });
+                        }
+                        else
+                        {
+                            Control control = pnlChat.Controls[pnlChat.Controls.Count - 1];
+                            pnlChat.ScrollControlIntoView(control);
+                        }
+                    }
+
+                    break;                
             }
 
             _socket.Shutdown(SocketShutdown.Both);
@@ -351,11 +483,10 @@ namespace Client.Forms
         /// <param name="e"></param>
         private void ContactSelected(object sender, EventArgs e)
         {
-            StartConnection();
-
             pnlChat.Visible = true;
             rtbMessage.Visible = true;
             ptbSend.Visible = true;
+            ptbReload.Visible = true;
 
             if (pnlChat.InvokeRequired)
             {
@@ -373,9 +504,8 @@ namespace Client.Forms
             Button clickedButton = sender as Button;
             _selectedUser = clickedButton.Text;
 
-            _buffer = Encoding.ASCII.GetBytes("Messages;" + _connectedUser + ";" + _selectedUser + ";");
-            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
-        }
+            LoadMessages(); // Reloads the messages
+        }      
 
         /// <summary>
         /// When the form is closed, we send to the server that the user has to be disconnected
@@ -386,15 +516,17 @@ namespace Client.Forms
         {
             StartConnection();
 
+            _buffer = Encoding.ASCII.GetBytes("Logout;" + _connectedUser + ";");
+
             try
             {
-                _buffer = Encoding.ASCII.GetBytes("Logout;" + _connectedUser + ";");
                 _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
             }
             catch (Exception)
             {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
-        }
+        }  
     }
 }

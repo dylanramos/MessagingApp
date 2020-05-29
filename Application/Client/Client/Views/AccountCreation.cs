@@ -128,29 +128,46 @@ namespace Client
         }
 
         /// <summary>
-        /// Starts the connection with the remote server
+        /// Checks the inserted characters and starts the connection with the remote server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CreateButtonClicked(object sender, EventArgs e)
         {
+            char[] deniedChars = { ';', '/', '"', '(', ')', '=', ',', '\'', '\\' };
+
             if (!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text) && !String.IsNullOrEmpty(txtPasswordVerification.Text))
             {
-                if (txtPassword.Text == txtPasswordVerification.Text)
+                if (txtUsername.Text.IndexOfAny(deniedChars) == -1 && txtPassword.Text.IndexOfAny(deniedChars) == -1)
                 {
-                    try
+                    if (txtPassword.Text.Length >= 10)
                     {
-                        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+                        if (txtPassword.Text == txtPasswordVerification.Text)
+                        {
+                            try
+                            {
+                                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                                _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+                            }
+                            catch (Exception)
+                            {
+                                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                Application.Exit();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Les mots de passe doivent être identiques.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
-                    catch (Exception exception)
+                    else
                     {
-                        MessageBox.Show(exception.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Votre mot de passe ne respecte pas la taille minimum de 10 caractères.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Les mots de passe doivent être identiques.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Les caractères ; / \" ( ) = , ' \\ sont interdits.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
@@ -165,14 +182,22 @@ namespace Client
         /// <param name="asyncResult"></param>
         private void ConnectCallback(IAsyncResult asyncResult)
         {
-            // Ends the connection request
-            _socket.EndConnect(asyncResult);
+            try
+            {
+                // Ends the connection request
+                _socket.EndConnect(asyncResult);
 
-            // Data to send
-            _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + txtPassword.Text + ";");
+                // Data to send
+                _buffer = Encoding.ASCII.GetBytes("AccountCreation;" + txtUsername.Text + ";" + txtPassword.Text + ";");
 
-            // Starts sending the data to the remote server
-            _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+                // Starts sending the data to the remote server
+                _socket.BeginSend(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(SendCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -181,14 +206,22 @@ namespace Client
         /// <param name="asyncResult"></param>
         private void SendCallback(IAsyncResult asyncResult)
         {
-            // Ends the send request
-            _socket.EndSend(asyncResult);
+            try
+            {
+                // Ends the send request
+                _socket.EndSend(asyncResult);
 
-            // Data to receive
-            _buffer = new byte[_socket.ReceiveBufferSize];
+                // Data to receive
+                _buffer = new byte[_socket.ReceiveBufferSize];
 
-            // Starts receiving the data
-            _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+                // Starts receiving the data
+                _socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -197,8 +230,16 @@ namespace Client
         /// <param name="asyncResult"></param>
         private void ReceiveCallback(IAsyncResult asyncResult)
         {
-            // Ends the data receiving
-            _socket.EndReceive(asyncResult);
+            try
+            {
+                // Ends the data receiving
+                _socket.EndReceive(asyncResult);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
 
             string data = Encoding.ASCII.GetString(_buffer);
             string[] words = data.Split(';');
