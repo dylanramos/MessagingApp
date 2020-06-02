@@ -1,15 +1,12 @@
 ﻿using Client.Views;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Client.Forms
@@ -75,13 +72,62 @@ namespace Client.Forms
         }
 
         /// <summary>
-        /// Reloads the data
+        /// When we leave the button with the mouse its style changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ptbReload_Click(object sender, EventArgs e)
+        private void ptbReload_MouseLeave(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Reloads the messages
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ptbReloadChat_Click(object sender, EventArgs e)
         {     
             LoadMessages(); // Reloads the messages
+        }
+
+        /// <summary>
+        /// Reloads the contacts
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ptbReloadContacts_Click(object sender, EventArgs e)
+        {
+            if(pnlContacts.InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate
+                {
+                    pnlContacts.Controls.Clear();
+                });
+            }
+            else
+            {
+                pnlContacts.Controls.Clear();
+            }
+
+            LoadContacts();
+        }
+
+        /// <summary>
+        /// Starts the connection with the remote server
+        /// </summary>
+        private void StartConnection()
+        {
+            try
+            {
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -159,24 +205,7 @@ namespace Client.Forms
                 MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
-        }    
-
-        /// <summary>
-        /// Starts the connection with the remote server
-        /// </summary>
-        private void StartConnection()
-        {
-            try
-            {
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-            }
-        }
+        }          
 
         /// <summary>
         /// Ends the connection request
@@ -252,7 +281,9 @@ namespace Client.Forms
                 case "Contacts":
 
                     int x = 0;
-                    int onlinePanelY = 50, offlinePanelY = 50;
+                    int y = 5;
+                    bool addOnlineLabel = true;
+                    bool addOfflineLabel = true;
 
                     for (int i = 1; i < words.Length - 1; i++)
                     {
@@ -265,54 +296,108 @@ namespace Client.Forms
 
                         if (users[1] == "Online")
                         {
-                            
+                            // Add online label
+                            if(addOnlineLabel)
+                            {
+                                Label label = new Label();
+                                label.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold);                             
+                                label.AutoSize = true;
+                                label.Text = "En ligne";
 
-                            if (pnlOnlineContacts.InvokeRequired)
+                                if (pnlContacts.InvokeRequired)
+                                {
+                                    Invoke((MethodInvoker)delegate
+                                    {
+                                        pnlContacts.Controls.Add(label);
+
+                                        x = (pnlContacts.Width / 2) - (label.Width / 2);
+                                        label.Location = new Point(x, y);
+                                    });
+                                }
+                                else
+                                {
+                                    pnlContacts.Controls.Add(label);
+
+                                    x = (pnlContacts.Width / 2) - (label.Width / 2);
+                                    label.Location = new Point(x, y);
+                                }
+
+                                addOnlineLabel = false;
+                                y += 30;
+                            }
+
+                            // Add contact button
+                            if (pnlContacts.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
-                                    pnlOnlineContacts.Controls.Add(button);
+                                    pnlContacts.Controls.Add(button);
 
-                                    x = (pnlOnlineContacts.Width / 2) - (button.Width / 2);
-                                    // Adds the button to the online panel
-                                    button.Location = new Point(x, onlinePanelY);
+                                    x = (pnlContacts.Width / 2) - (button.Width / 2);
+                                    button.Location = new Point(x, y);
                                 });
                             }
                             else
                             {
-                                pnlOnlineContacts.Controls.Add(button);
-                                x = (pnlOnlineContacts.Width / 2) - (button.Width / 2);
-                                // Adds the button to the online panel
-                                button.Location = new Point(x, onlinePanelY);
-                            }
+                                pnlContacts.Controls.Add(button);
 
-                            onlinePanelY += 50;
+                                x = (pnlContacts.Width / 2) - (button.Width / 2);
+                                button.Location = new Point(x, y);
+                            }        
                         }
                         else
                         {
-                            
+                            // Add offline label
+                            if (addOfflineLabel)
+                            {
+                                Label label = new Label();
+                                label.Font = new Font("Microsoft YaHei", 12F, FontStyle.Bold);
+                                label.AutoSize = true;
+                                label.Text = "Hors-ligne";
 
-                            if (pnlOfflineContacts.InvokeRequired)
+                                if (pnlContacts.InvokeRequired)
+                                {
+                                    Invoke((MethodInvoker)delegate
+                                    {
+                                        pnlContacts.Controls.Add(label);
+
+                                        x = (pnlContacts.Width / 2) - (label.Width / 2);
+                                        label.Location = new Point(x, y);
+                                    });
+                                }
+                                else
+                                {
+                                    pnlContacts.Controls.Add(label);
+
+                                    x = (pnlContacts.Width / 2) - (label.Width / 2);
+                                    label.Location = new Point(x, y);
+                                }
+
+                                addOfflineLabel = false;
+                                y += 30;
+                            }
+
+                            // Add contact button
+                            if (pnlContacts.InvokeRequired)
                             {
                                 Invoke((MethodInvoker)delegate
                                 {
-                                    pnlOfflineContacts.Controls.Add(button);
+                                    pnlContacts.Controls.Add(button);
 
-                                    x = (pnlOfflineContacts.Width / 2) - (button.Width / 2);
-                                    // Adds the button to the offline panel
-                                    button.Location = new Point(x, offlinePanelY);
+                                    x = (pnlContacts.Width / 2) - (button.Width / 2);
+                                    button.Location = new Point(x, y);
                                 });
                             }
                             else
                             {
-                                pnlOfflineContacts.Controls.Add(button);
-                                x = (pnlOfflineContacts.Width / 2) - (button.Width / 2);
-                                // Adds the button to the offline panel
-                                button.Location = new Point(x, offlinePanelY);
-                            }
+                                pnlContacts.Controls.Add(button);
 
-                            offlinePanelY += 50;
+                                x = (pnlContacts.Width / 2) - (button.Width / 2);
+                                button.Location = new Point(x, y);
+                            }
                         }
+
+                        y += 50;
                     }
 
                     break;
@@ -486,7 +571,8 @@ namespace Client.Forms
             pnlChat.Visible = true;
             rtbMessage.Visible = true;
             ptbSend.Visible = true;
-            ptbReload.Visible = true;
+            ptbReloadChat.Visible = true;
+            ptbReloadContacts.Visible = true;
 
             if (pnlChat.InvokeRequired)
             {
@@ -505,7 +591,7 @@ namespace Client.Forms
             _selectedUser = clickedButton.Text;
 
             LoadMessages(); // Reloads the messages
-        }      
+        }    
 
         /// <summary>
         /// When the form is closed, we send to the server that the user has to be disconnected

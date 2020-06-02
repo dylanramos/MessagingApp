@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
@@ -191,11 +192,17 @@ namespace Server
             string dateTime = "[" + DateTime.Now.ToString("dd MMMM yyyy, H:mm:ss") + "] ";
             string log = dateTime + "L'utilisateur " + usernameToCheck + " s'est connecté";
 
-            User realUser = _databaseConnection.GetUserCredentials(usernameToCheck);
+            // Password hash
+            var sha1 = new SHA1CryptoServiceProvider();
+            var data = Encoding.ASCII.GetBytes(passwordToCheck);
+            var hashedPassword = sha1.ComputeHash(data);
+            string password = Encoding.ASCII.GetString(hashedPassword);
+
+            User realUser = _databaseConnection.GetUserCredentials(usernameToCheck);     
 
             if (realUser != null)
             {
-                if (passwordToCheck == realUser.Password)
+                if (password == realUser.Password)
                 {
                     // Sets the user online
                     foreach (User user in _users)
@@ -331,7 +338,12 @@ namespace Server
             }
             else
             {
-                _databaseConnection.CreateAccount(username, password);
+                // Password hash
+                var sha1 = new SHA1CryptoServiceProvider();
+                var data = Encoding.ASCII.GetBytes(password);
+                var hashedPassword = sha1.ComputeHash(data);
+
+                _databaseConnection.CreateAccount(username, Encoding.ASCII.GetString(hashedPassword));
 
                 // Adds the new user to the list
                 User newUser = new User(username, "", false);
@@ -353,7 +365,7 @@ namespace Server
         {
             string dataToSend = "Contacts;";
 
-            // Sends the connected users username
+            // Connected users username
             foreach (User user in _users)
             {
                 if (senderUser != user.Username && user.Online == true)
@@ -362,7 +374,7 @@ namespace Server
                 }
             }
 
-            // Sends the disconnected users username
+            // Disconnected users username
             foreach (User user in _users)
             {
                 if (senderUser != user.Username && user.Online == false)
@@ -409,6 +421,11 @@ namespace Server
             _clientSocket.Send(_buffer);
         }
 
+        /// <summary>
+        /// Closes the server
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cmdClose_Click(object sender, EventArgs e)
         {
             this.Close();
