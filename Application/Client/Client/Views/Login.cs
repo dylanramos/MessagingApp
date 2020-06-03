@@ -102,33 +102,17 @@ namespace Client
         /// <param name="e"></param>
         private void LoginButtonClicked(object sender, EventArgs e)
         {
-            char[] deniedChars = { ';', '/', '"', '(', ')', '=', ',', '\'', '\\' };
-
             if (!String.IsNullOrEmpty(txtUsername.Text) && !String.IsNullOrEmpty(txtPassword.Text))
             {
-                if (txtUsername.Text.IndexOfAny(deniedChars) == -1 && txtPassword.Text.IndexOfAny(deniedChars) == -1)
+                try
                 {
-                    if (txtPassword.Text.Length >= 10)
-                    {
-                        try
-                        {
-                            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                            _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
-                        }
-                        catch (Exception)
-                        {
-                            MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            Application.Exit();
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Votre mot de passe ne respecte pas la taille minimum de 10 caractères.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _socket.BeginConnect(new IPEndPoint(IPAddress.Parse(SERVER_IP), SERVER_PORT), new AsyncCallback(ConnectCallback), null);
                 }
-                else
+                catch (Exception)
                 {
-                    MessageBox.Show("Les caractères ; / \" ( ) = , ' \\ sont interdits.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Le serveur distant est inaccessible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit();
                 }
             }
             else
